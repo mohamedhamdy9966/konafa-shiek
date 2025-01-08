@@ -30,7 +30,6 @@ const Login = () => {
           email,
           password,
         });
-        console.log(response.data)
         if (response.data.success) {
           const { token, userId } = response.data;
           setToken(token);

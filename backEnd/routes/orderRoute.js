@@ -3,7 +3,8 @@ import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
 import {
   placeOrderMoyasar,
-  placeOrderPayTabs,
+  placeOrder,
+  placeOrderPaytabs,
   userOrders,
   allOrders,
   updateStatus,
@@ -16,8 +17,9 @@ orderRouter.get("/", adminAuth, allOrders); // Get all orders
 orderRouter.put("/status", adminAuth, updateStatus); // Update order status
 
 // Payment Routes
+orderRouter.post("/place", authUser, placeOrder); // COD payment
 orderRouter.post("/moyasar", authUser, placeOrderMoyasar); // Moyasar payment
-orderRouter.post("/paytabs", authUser, placeOrderPayTabs); // PayTabs payment
+orderRouter.post("/paytabs", authUser, placeOrderPaytabs); // Moyasar payment
 
 // User Routes
 orderRouter.get("/userorders", authUser, userOrders); // Get user's orders

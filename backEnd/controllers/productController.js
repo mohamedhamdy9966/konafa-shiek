@@ -4,25 +4,32 @@ import productModel from "../models/productModel.js";
 // Add product
 const addProduct = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      category,
-      sizes,
-      bestSeller,
-    } = req.body;
+    const { name, description, category, sizes, bestSeller } = req.body;
     console.log("Received Category:", category); // Log received category
-    console.log(sizes);
-    
+    console.log("Received Sizes:", sizes); // Log received sizes
+
+    // Ensure sizes is a valid JSON string
+    let parsedSizes;
+    try {
+      parsedSizes = JSON.parse(sizes);
+    } catch (error) {
+      return res.status(400).json({ success: false, message: "Invalid sizes format" });
+    }
+
+    // Validate sizes
+    if (!parsedSizes || typeof parsedSizes !== "object") {
+      return res.status(400).json({ success: false, message: "Invalid sizes" });
+    }
+
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
     const image3 = req.files.image3 && req.files.image3[0];
     const image4 = req.files.image4 && req.files.image4[0];
-    
+
     const images = [image1, image2, image3, image4].filter(
       (item) => item !== undefined
     );
-    
+
     let imagesUrl = await Promise.all(
       images.map(async (item) => {
         let result = await cloudinary.uploader.upload(item.path, {
@@ -31,10 +38,6 @@ const addProduct = async (req, res) => {
         return result.secure_url;
       })
     );
-    
-    const parsedSizes = JSON.parse(sizes); // Ensure sizes is a JSON string from the frontend
-    console.log(parsedSizes);
-    console.log("XS Calories:", parsedSizes.XS?.calories);
 
     const productData = {
       name,
@@ -42,7 +45,7 @@ const addProduct = async (req, res) => {
       category,
       sizes: parsedSizes,
       bestSeller: bestSeller === "true" || bestSeller === true,
-      image: imagesUrl, 
+      image: imagesUrl,
       date: Date.now(),
     };
 
@@ -62,7 +65,12 @@ const addProduct = async (req, res) => {
 // List products with pagination and filtering
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({}, "name category sizes image description");
+    const products = await productModel.find({});
+    if (!products || products.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No products found" });
+    }
     res.json({
       success: true,
       products,

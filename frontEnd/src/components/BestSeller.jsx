@@ -9,8 +9,13 @@ const BestSeller = () => {
   const [bestSeller, setBestSeller] = useState([]);
 
   useEffect(() => {
-    const bestProduct = products.filter((item) => item.bestSeller);
-    setBestSeller(bestProduct.slice(0, 5));
+    if (products && products.length > 0) {
+      // Check for bestSeller field explicitly as boolean
+      const bestProduct = products.filter((item) => {
+        return item.bestSeller === true;  // Ensure we check the exact boolean value
+      });
+      setBestSeller(bestProduct.slice(0, 5));
+    }
   }, [products]);
 
   return (
@@ -29,13 +34,12 @@ const BestSeller = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
           {bestSeller.map((item, index) => (
             <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name || "Konafa-Shiek"}
-            sizes={item.sizes || {}}
-            category={item.category}
-          />
+              key={index}
+              id={item._id}
+              image={item.image || []}
+              name={item.name || "Konafa-Shiek"}
+              sizes={item.sizes || {}}
+            />
           ))}
         </div>
       ) : (

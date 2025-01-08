@@ -1,5 +1,4 @@
 import { useContext, useState } from "react";
-import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
@@ -7,7 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
-  const [method, setMethod] = useState("moyasar");
+  const [method, setMethod] = useState("COD");
   const {
     navigate,
     backendUrl,
@@ -18,6 +17,7 @@ const PlaceOrder = () => {
     delivery_fee,
     products,
   } = useContext(ShopContext);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -26,6 +26,7 @@ const PlaceOrder = () => {
     state: "",
     phone: "",
   });
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -36,33 +37,59 @@ const PlaceOrder = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+      console.log("Cart Items:", cartItems);
+      if (Object.keys(cartItems).length === 0) {
+        toast.error("Your cart is empty");
+        return;
+      }
       let orderItems = [];
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
-            );
-            if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
-              orderItems.push(itemInfo);
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          const item = cartItems[productId][size];
+          if (item.quantity > 0) {
+            const productInfo = products.find((product) => product._id === productId);
+            if (productInfo) {
+              // Access sizes as a plain object
+              const sizeInfo = productInfo.sizes[size];
+              if (sizeInfo) {
+                const orderItem = {
+                  productId: productInfo._id,
+                  name: productInfo.name,
+                  image: productInfo.image[0],
+                  price: sizeInfo.price + (item.sauceSize || 0), // Include sauce price
+                  quantity: item.quantity,
+                  size: size,
+                  sauceSize: item.sauceSize || 0, // Include sauce size
+                  selectedSauce: item.selectedSauce || [], // Include selected sauce
+                };
+                orderItems.push(orderItem);
+              } else {
+                console.warn(`Size ${size} not found for product ${productInfo.name}`);
+              }
             }
           }
         }
       }
+      console.log("Order Items:", orderItems);
+      const userId = localStorage.getItem("userId") || token?.userId || "";
+      if (!userId) {
+        toast.error("User ID is missing. Please log in.");
+        return;
+      }
       let orderData = {
+        userId,
         address: formData,
         items: orderItems,
         amount: getCartAmount() + delivery_fee,
+        paymentMethod: method,
       };
+      console.log(orderData);
       switch (method) {
-        // api call for moyasar
-        case "moyasar": {
+        case "COD": {
           const response = await axios.post(
             backendUrl + "/api/order/place",
             orderData,
-            { headers: { Authorization: `Bearer${token}` } }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           if (response.data.success) {
             setCartItems({});
@@ -72,7 +99,6 @@ const PlaceOrder = () => {
           }
           break;
         }
-
         default:
           break;
       }
@@ -80,6 +106,7 @@ const PlaceOrder = () => {
       toast.error(error.message);
     }
   };
+  
   return (
     <form
       autoComplete="true"
@@ -137,7 +164,7 @@ const PlaceOrder = () => {
             value={formData.state}
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full cursor-pointer"
           >
-            <option className="cursor-pointer">
+            <option disabled className="cursor-pointer">
               {" "}
               إختر فرع التسليم الأقرب إليك
             </option>
@@ -167,42 +194,17 @@ const PlaceOrder = () => {
           <div
             className="flex gap-3 flex-col lg:flex-row"
           >
-            <div 
-            onClick={() => setMethod("stripe")}
-            className="flex items-center gap-3 border p-2 px-3 cursor-pointer">
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "stripe" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img src={assets.stripe_logo} alt="stripe" className="h-5 mx-4" />
-            </div>
             <div
-              onClick={() => setMethod("payTabs")}
+              onClick={() => setMethod("COD")}
               className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
             >
               <p
                 className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "payTabs" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img
-                src={assets.paytabs_logo}
-                alt="payTabs"
-                className="h-5 mx-4"
-              />
-            </div>
-            <div
-              onClick={() => setMethod("moyasar")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "moyasar" ? "bg-green-400" : ""
+                  method === "COD" ? "bg-green-400" : ""
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                Visa
+                الدفع عند الإستلام
               </p>
             </div>
           </div>

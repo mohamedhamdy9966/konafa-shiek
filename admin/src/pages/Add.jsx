@@ -39,6 +39,8 @@ const Add = ({ token }) => {
     try {
       // Validate sizes
       const validatedSizes = {};
+      let hasEnabledSize = false;
+  
       Object.keys(sizes).forEach((size) => {
         if (sizes[size].enabled) {
           if (!sizes[size].price) {
@@ -47,51 +49,52 @@ const Add = ({ token }) => {
           validatedSizes[size] = {
             enabled: true,
             price: parseFloat(sizes[size].price),
-            calories: parseFloat(sizes[size].calories),
+            calories: parseFloat(sizes[size].calories || 0), // Default to 0 if calories are not provided
           };
+          hasEnabledSize = true;
         } else {
           validatedSizes[size] = { enabled: false, price: 0, calories: 0 }; // Default for disabled sizes
         }
       });
-
+  
+      if (!hasEnabledSize) {
+        throw new Error("At least one size must be enabled.");
+      }
+  
       const formData = new FormData();
-
+  
       formData.append("name", name);
       formData.append("description", description);
       formData.append("category", category);
       formData.append("sizes", JSON.stringify(validatedSizes));
       formData.append("bestSeller", bestSeller);
-
+  
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
-
+  
       console.log("Form Data Before Sending:", {
         name,
         description,
         category,
-        sizes: Object.fromEntries(
-          Object.entries(sizes).map(([key, value]) => ({
-            [key]: { ...value, calories: value.calories || "Not Set" },
-          }))
-        ),
+        sizes: validatedSizes,
         bestSeller,
-      }); 
-
-      console.log("Sizes before submission:", sizes);
+      });
   
-
+      console.log("Sizes before submission:", validatedSizes);
+  
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-
+  
       if (response.data.success) {
         toast.success(response.data.message);
         setName("");

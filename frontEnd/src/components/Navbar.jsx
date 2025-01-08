@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
@@ -12,7 +12,15 @@ const Navbar = () => {
     token,
     setToken,
     setCartItems,
+    cartItems,
   } = useContext(ShopContext);
+
+  const [cartCount, setCartCount] = useState(0); // Local state for cart count
+
+  // Update cart count whenever cartItems changes
+  useEffect(() => {
+    setCartCount(getCartCount());
+  }, [cartItems, getCartCount]);
 
   const handleLogout = () => {
     navigate("/login");
@@ -101,7 +109,7 @@ const Navbar = () => {
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-5" alt="cart" />
           <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-            {getCartCount()}
+            {cartCount} {/* Use the local cartCount state */}
           </p>
         </Link>
 

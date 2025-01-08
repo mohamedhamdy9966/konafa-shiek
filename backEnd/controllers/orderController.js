@@ -1,95 +1,69 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import axios from 'axios';
 import Joi from "joi";
 
-// Validation schemas
-// const orderSchema = Joi.object({
-//   userId: Joi.string().required(),
-//   items: Joi.array().items(
-//     Joi.object({
-//       itemId: Joi.string().required(),
-//       size: Joi.string().required(),
-//       quantity: Joi.number().integer().min(1).required(),
-//     })
-//   ).required(),
-//   amount: Joi.number().min(0).required(),
-//   address: Joi.string().required(),
-// });
+// Define the schema for updating the order status
+const updateStatusSchema = Joi.object({
+  orderId: Joi.string().required(), // Ensure the ID is a string and is required
+  status: Joi.string()
+    .valid("Order Placed", "Packing", "Ready", "Delivered") // Define valid statuses
+    .required(),
+});
 
-// const updateStatusSchema = Joi.object({
-//   orderId: Joi.string().required(),
-//   status: Joi.string().valid("pending", "shipped", "delivered", "cancelled").required(),
-// });
 
-// Utility function for placing orders
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
+    console.log("Items being saved:", items);
     const orderData = {
       userId,
       items,
       address,
       amount,
-      paymentMethod,
-      payment: paymentStatus,
+      paymentMethod: "COD",
+      payment: false,
       date: Date.now(),
     };
     const newOrder = new orderModel(orderData);
     await newOrder.save();
     await userModel.findByIdAndUpdate(userId, { cartData: {} }); // Clear user cart
-    res.json({success: true, message: "Order Placed"})
+    res.json({ success: true, message: "Order Placed" });
   } catch (error) {
     console.log(error);
-    res.json({success: false, message: error.message})
+    res.json({ success: false, message: error.message });
   }
 };
 
 // Placing order using moyasar method
 const placeOrderMoyasar = async (req, res) => {
   try {
-    await orderSchema.validateAsync(req.body);
-
-    const { userId, items, amount, address } = req.body;
-    await saveOrder({
+    console.log("Request received:", req.body);
+    const { userId, amount, items, address } = req.body;
+    const newOrder = await orderModel.create({
       userId,
-      items,
       amount,
+      items,
       address,
-      paymentMethod: "moyasar",
+      paymentMethod: "Moyasar",
       paymentStatus: false,
+      date: Date.now(),
     });
 
-    res.status(201).json({ success: true, message: "Order placed successfully" });
+    res.status(201).json({
+      success: true,
+      orderId: newOrder._id,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("Error in placeOrderMoyasar:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Placing order using PayTabs
-const placeOrderPayTabs = async (req, res) => {
-  try {
-    await orderSchema.validateAsync(req.body);
+// placing order using paytabs
+const placeOrderPaytabs = async (req,res) => {
 
-    const { userId, items, amount, address } = req.body;
-    // PayTabs payment processing logic goes here
-    const paymentSuccessful = true; // Replace with actual payment status from PayTabs
-
-    await saveOrder({
-      userId,
-      items,
-      amount,
-      address,
-      paymentMethod: "PayTabs",
-      paymentStatus: paymentSuccessful,
-    });
-
-    res.status(201).json({ success: true, message: "Order placed via PayTabs" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
+}
 
 // Fetch all orders (Admin)
 const allOrders = async (req, res) => {
@@ -98,6 +72,7 @@ const allOrders = async (req, res) => {
 
     const orders = await orderModel
       .find({})
+      .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -112,7 +87,11 @@ const allOrders = async (req, res) => {
 // Fetch user-specific orders
 const userOrders = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId  = req.userId;
+    console.log("User ID from token:", userId);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "Login please To Your Account To see Your orders !"})
+    }
     const { page = 1, limit = 10 } = req.query;
 
     const orders = await orderModel
@@ -120,10 +99,11 @@ const userOrders = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
+    console.log("Orders found:", orders);
     res.json({ success: true, orders, page, limit });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error in displaying orders for user" });
   }
 };
 
@@ -133,10 +113,16 @@ const updateStatus = async (req, res) => {
     await updateStatusSchema.validateAsync(req.body);
 
     const { orderId, status } = req.body;
-    const updatedOrder = await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
 
     if (!updatedOrder) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     res.json({ success: true, message: "Order status updated" });
@@ -146,4 +132,11 @@ const updateStatus = async (req, res) => {
   }
 };
 
-export { placeOrderMoyasar, placeOrderPayTabs, allOrders, userOrders, updateStatus };
+export {
+  placeOrderMoyasar,
+  placeOrder,
+  placeOrderPaytabs,
+  allOrders,
+  userOrders,
+  updateStatus,
+};

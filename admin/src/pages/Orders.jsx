@@ -17,12 +17,19 @@ const Orders = ({ token }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Fetching orders with token:", token);
       const response = await axios.get(backendUrl + "/api/order", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Fetched orders:", response.data.orders);
       if (response.data.success) {
         setOrders(response.data.orders);
+        // Log each order's date for debugging
+        response.data.orders.forEach((order) => {
+          console.log("Order date:", new Date(order.date));
+        });
+
+        // Log today's date for comparison
+        console.log("Today's date:", new Date());
       } else {
         setError(response.data.message);
         toast.error(response.data.message);
@@ -34,14 +41,14 @@ const Orders = ({ token }) => {
     } finally {
       setLoading(false);
     }
-  }; 
+  };
 
   const statusHandler = async (event, orderId) => {
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         backendUrl + "/api/order/status",
         { orderId, status: event.target.value },
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
         toast.success("Status updated successfully");
@@ -73,10 +80,29 @@ const Orders = ({ token }) => {
             <img className="w-12" src={parcel} alt="parcel" />
             <div>
               <div>
-                {order.items.map((item, index) => (
-                  <p className="py-0.5" key={index}>
-                    {item.name} X {item.quantity} <span>{item.size}</span>
-                  </p>
+                {order.items.map((item, itemIndex) => (
+                  <div key={itemIndex}>
+                    <p className="py-0.5">
+                      {item.name} X {item.quantity} <span>{item.size}</span>
+                    </p>
+                    {item.sauceSize > 0 && (
+                      <p className="text-sm" key={`sauceSize-${itemIndex}`}>
+                        حجم الصوص:{" "}
+                        {item.sauceSize === 4
+                          ? "XS"
+                          : item.sauceSize === 5
+                          ? "S"
+                          : item.sauceSize === 10
+                          ? "M"
+                          : "L"}
+                      </p>
+                    )}
+                    {item.selectedSauce && item.selectedSauce.length > 0 && (
+                      <p className="text-sm" key={`selectedSauce-${itemIndex}`}>
+                        أنواع الصوصات: {item.selectedSauce.join(", ")}
+                      </p>
+                    )}
+                  </div>
                 ))}
               </div>
               <p className="mt-3 mb-2 font-medium">
@@ -90,11 +116,11 @@ const Orders = ({ token }) => {
             </div>
             <div>
               <p className="text-sm sm:text-[15px]">
-                Items: {order.items.length}
+                عدد الطلبات {order.items.length}
               </p>
-              <p className="mt-3">Method: {order.paymentMethod}</p>
-              <p>Payment: {order.payment ? "Done" : "Pending"}</p>
-              <p>Date: {new Date(order.date).toLocaleDateString()}</p>
+              <p className="mt-3">طريقة الدفع: {order.paymentMethod}</p>
+              <p>الدفع: {order.payment ? "Done" : "Pending"}</p>
+              <p>التاريخ: {new Date(order.date).toLocaleDateString()}</p>
             </div>
             <p className="text-sm sm:text-[15px]">
               {currency || "$"}
