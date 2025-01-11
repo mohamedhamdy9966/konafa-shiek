@@ -32,6 +32,9 @@ const Add = ({ token }) => {
     S: { enabled: false, price: "", calories: "", offer: "" },
     M: { enabled: false, price: "", calories: "", offer: "" },
     L: { enabled: false, price: "", calories: "", offer: "" },
+    Pieces_6: { enabled: false, price: "", calories: "", offer: "" },
+    Pieces_12: { enabled: false, price: "", calories: "", offer: "" },
+    Pieces_18: { enabled: false, price: "", calories: "", offer: "" },
   });
 
   const onSubmitHandler = async (e) => {
@@ -114,6 +117,9 @@ const Add = ({ token }) => {
           S: { enabled: false, price: "", calories: "", offer: "" },
           M: { enabled: false, price: "", calories: "", offer: "" },
           L: { enabled: false, price: "", calories: "", offer: "" },
+          Pieces_6: { enabled: false, price: "", calories: "", offer: "" },
+          Pieces_12: { enabled: false, price: "", calories: "", offer: "" },
+          Pieces_18: { enabled: false, price: "", calories: "", offer: "" },
         });
       } else {
         toast.error(response.data.message);
