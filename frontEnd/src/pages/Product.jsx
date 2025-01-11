@@ -95,7 +95,7 @@ const Product = () => {
             ))}
             <p className="pl-2">(122)</p>
           </div>
-          <p className="mt-5 text-3xl font-medium">
+          <p className="mt-5 text-sm text-slate-700 font-medium line-through">
             {productData.sizes?.get(size)?.offer
               ? `السعر قبل العرض : ${
                   productData.sizes.get(size).offer
