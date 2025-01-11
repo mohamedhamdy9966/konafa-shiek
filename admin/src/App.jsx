@@ -12,7 +12,7 @@ import { useEffect } from "react";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-export const currency = "EGP"
+export const currency = "SAR"
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '' );
 

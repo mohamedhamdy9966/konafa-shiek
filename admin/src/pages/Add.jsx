@@ -28,10 +28,10 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Konafa");
   const [bestSeller, setBestSeller] = useState(false);
   const [sizes, setSizes] = useState({
-    XS: { enabled: false, price: "", calories: "" },
-    S: { enabled: false, price: "", calories: "" },
-    M: { enabled: false, price: "", calories: "" },
-    L: { enabled: false, price: "", calories: "" },
+    XS: { enabled: false, price: "", calories: "", offer: "" },
+    S: { enabled: false, price: "", calories: "", offer: "" },
+    M: { enabled: false, price: "", calories: "", offer: "" },
+    L: { enabled: false, price: "", calories: "", offer: "" },
   });
 
   const onSubmitHandler = async (e) => {
@@ -40,7 +40,7 @@ const Add = ({ token }) => {
       // Validate sizes
       const validatedSizes = {};
       let hasEnabledSize = false;
-  
+
       Object.keys(sizes).forEach((size) => {
         if (sizes[size].enabled) {
           if (!sizes[size].price) {
@@ -50,30 +50,36 @@ const Add = ({ token }) => {
             enabled: true,
             price: parseFloat(sizes[size].price),
             calories: parseFloat(sizes[size].calories || 0), // Default to 0 if calories are not provided
+            offer: parseFloat(sizes[size].offer || 0), // default value if non offer applied
           };
           hasEnabledSize = true;
         } else {
-          validatedSizes[size] = { enabled: false, price: 0, calories: 0 }; // Default for disabled sizes
+          validatedSizes[size] = {
+            enabled: false,
+            price: 0,
+            calories: 0,
+            offer: 0,
+          }; // Default for disabled sizes
         }
       });
-  
+
       if (!hasEnabledSize) {
         throw new Error("At least one size must be enabled.");
       }
-  
+
       const formData = new FormData();
-  
+
       formData.append("name", name);
       formData.append("description", description);
       formData.append("category", category);
       formData.append("sizes", JSON.stringify(validatedSizes));
       formData.append("bestSeller", bestSeller);
-  
+
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
-  
+
       console.log("Form Data Before Sending:", {
         name,
         description,
@@ -81,9 +87,9 @@ const Add = ({ token }) => {
         sizes: validatedSizes,
         bestSeller,
       });
-  
+
       console.log("Sizes before submission:", validatedSizes);
-  
+
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
@@ -94,7 +100,7 @@ const Add = ({ token }) => {
           },
         }
       );
-  
+
       if (response.data.success) {
         toast.success(response.data.message);
         setName("");
@@ -104,10 +110,10 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setSizes({
-          XS: { enabled: false, price: "", calories: "" },
-          S: { enabled: false, price: "", calories: "" },
-          M: { enabled: false, price: "", calories: "" },
-          L: { enabled: false, price: "", calories: "" },
+          XS: { enabled: false, price: "", calories: "", offer: "" },
+          S: { enabled: false, price: "", calories: "", offer: "" },
+          M: { enabled: false, price: "", calories: "", offer: "" },
+          L: { enabled: false, price: "", calories: "", offer: "" },
         });
       } else {
         toast.error(response.data.message);
@@ -257,8 +263,20 @@ const Add = ({ token }) => {
               {sizes[size].enabled && (
                 <>
                   <input
+                    onChange={(e) =>
+                      setSizes((prev) => ({
+                        ...prev,
+                        [size]: { ...prev[size], offer: e.target.value },
+                      }))
+                    }
                     type="number"
-                    placeholder="Price"
+                    value={sizes[size].offer || ""}
+                    placeholder="السعر قبل العرض"
+                    className="px-2 py-1 border"
+                  />
+                  <input
+                    type="number"
+                    placeholder="السعر الحقيقي"
                     value={sizes[size].price || ""}
                     onChange={(e) =>
                       setSizes((prev) => ({
@@ -277,7 +295,7 @@ const Add = ({ token }) => {
                     }
                     type="number"
                     value={sizes[size].calories || ""}
-                    placeholder="calories"
+                    placeholder="السعرات الحرارية"
                     className="px-2 py-1 border"
                   />
                 </>

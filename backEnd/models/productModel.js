@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
       enabled: { type: Boolean, default: false },
       price: { type: Number, min: 0 },
       calories: { type: Number, min: 0},
+      offer: { type: Number, min: 0, default: null},
     },
     required: true,
   },

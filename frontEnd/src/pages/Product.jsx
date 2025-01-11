@@ -96,6 +96,13 @@ const Product = () => {
             <p className="pl-2">(122)</p>
           </div>
           <p className="mt-5 text-3xl font-medium">
+            {productData.sizes?.get(size)?.offer
+              ? `السعر قبل العرض : ${
+                  productData.sizes.get(size).offer
+                } SAR `
+              : "السعرات الحرارية غير معروفة"}
+          </p>
+          <p className="mt-5 text-3xl font-medium">
             {currency}
             {productData.sizes?.get(size)?.price !== undefined
               ? (productData.sizes.get(size).price + (sauceSize || 0)).toFixed(
