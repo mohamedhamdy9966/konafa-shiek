@@ -1,7 +1,8 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
-import axios from 'axios';
+import axios from "axios";
 import Joi from "joi";
+import Moyasar from 'moyasar';
 
 // Define the schema for updating the order status
 const updateStatusSchema = Joi.object({
@@ -11,6 +12,12 @@ const updateStatusSchema = Joi.object({
     .required(),
 });
 
+// global variables
+const currency = "SAR";
+const deliveryCharge = 1;
+
+// moyasar initialize
+const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
 
 const placeOrder = async (req, res) => {
   try {
@@ -35,35 +42,80 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Placing order using moyasar method
 const placeOrderMoyasar = async (req, res) => {
   try {
-    console.log("Request received:", req.body);
     const { userId, amount, items, address } = req.body;
-    const newOrder = await orderModel.create({
+    const { origin } = req.headers;
+
+    const orderData = {
       userId,
-      amount,
       items,
       address,
-      paymentMethod: "Moyasar",
-      paymentStatus: false,
+      amount,
+      paymentMethod: "moyasar",
+      payment: false,
       date: Date.now(),
+    };
+
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    const line_items = items.map((item) => ({
+      price_data: {
+        currency: currency,
+        product_data: {
+          name: item.name,
+        },
+        unit_amount: item.price * 100,
+      },
+      quantity: item.quantity,
+    }));
+
+    line_items.push({
+      price_data: {
+        currency: currency,
+        product_data: {
+          name: "Delivery Charges",
+        },
+        unit_amount: deliveryCharge * 100,
+      },
+      quantity: 1,
     });
 
-    res.status(201).json({
-      success: true,
-      orderId: newOrder._id,
+    const session = await moyasar.checkout.sessions.create({
+      success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
+      cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
+      line_items,
+      mode: "payment",
     });
+
+    res.json({ success: true, session_url: session.url });
   } catch (error) {
     console.error("Error in placeOrderMoyasar:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// placing order using paytabs
-const placeOrderPaytabs = async (req,res) => {
+const verifyMoyasar = async (req, res) => {
+  const { orderId, success, userId } = req.body;
 
-}
+  try {
+    if (success == "true") {
+      await orderModel.findByIdAndUpdate(orderId, { payment: true });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
+      res.json({ success: true });
+    } else {
+      await orderModel.findByIdAndDelete(orderId);
+      res.json({ success: false });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// placing order using paytabs
+const placeOrderPaytabs = async (req, res) => {};
 
 // Fetch all orders (Admin)
 const allOrders = async (req, res) => {
@@ -87,10 +139,13 @@ const allOrders = async (req, res) => {
 // Fetch user-specific orders
 const userOrders = async (req, res) => {
   try {
-    const userId  = req.userId;
+    const userId = req.userId;
     console.log("User ID from token:", userId);
     if (!userId) {
-      return res.status(400).json({ success: false, message: "Login please To Your Account To see Your orders !"})
+      return res.status(400).json({
+        success: false,
+        message: "Login please To Your Account To see Your orders !",
+      });
     }
     const { page = 1, limit = 10 } = req.query;
 
@@ -103,7 +158,10 @@ const userOrders = async (req, res) => {
     res.json({ success: true, orders, page, limit });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error in displaying orders for user" });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error in displaying orders for user",
+    });
   }
 };
 
@@ -139,4 +197,5 @@ export {
   allOrders,
   userOrders,
   updateStatus,
+  verifyMoyasar
 };

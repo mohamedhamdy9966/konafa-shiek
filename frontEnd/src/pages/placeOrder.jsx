@@ -49,18 +49,17 @@ const PlaceOrder = () => {
           if (item.quantity > 0) {
             const productInfo = products.find((product) => product._id === productId);
             if (productInfo) {
-              // Access sizes as a plain object
               const sizeInfo = productInfo.sizes[size];
               if (sizeInfo) {
                 const orderItem = {
                   productId: productInfo._id,
                   name: productInfo.name,
                   image: productInfo.image[0],
-                  price: sizeInfo.price + (item.sauceSize || 0), // Include sauce price
+                  price: sizeInfo.price + (item.sauceSize || 0),
                   quantity: item.quantity,
                   size: size,
-                  sauceSize: item.sauceSize || 0, // Include sauce size
-                  selectedSauce: item.selectedSauce || [], // Include selected sauce
+                  sauceSize: item.sauceSize || 0,
+                  selectedSauce: item.selectedSauce || [],
                 };
                 orderItems.push(orderItem);
               } else {
@@ -96,6 +95,20 @@ const PlaceOrder = () => {
             navigate("/orders");
           } else {
             toast.error(response.data.message);
+          }
+          break;
+        }
+        case 'moyasar': {
+          const responseMoyasar = await axios.post(
+            backendUrl + '/api/order/moyasar',
+            orderData,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (responseMoyasar.data.success) {
+            const { session_url } = responseMoyasar.data;
+            window.location.replace(session_url);
+          } else {
+            toast.error(responseMoyasar.data.message);
           }
           break;
         }
@@ -205,6 +218,19 @@ const PlaceOrder = () => {
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
                 الدفع عند الإستلام
+              </p>
+            </div>
+            <div
+              onClick={() => setMethod("moyasar")}
+              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "moyasar" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                الدفع بالفيزا
               </p>
             </div>
           </div>
