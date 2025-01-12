@@ -111,8 +111,8 @@ const PlaceOrder = () => {
             { headers: { Authorization: `Bearer ${token}` } }
           );
           if (responseMoyasar.data.success) {
-            const { session_url } = responseMoyasar.data;
-            window.location.replace(session_url);
+            const { payment_url } = responseMoyasar.data;
+            window.location.replace(payment_url); // Redirect the user to the payment URL
           } else {
             toast.error(responseMoyasar.data.message);
           }

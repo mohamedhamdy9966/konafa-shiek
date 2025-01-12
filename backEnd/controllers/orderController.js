@@ -2,7 +2,7 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import axios from "axios";
 import Joi from "joi";
-import Moyasar from 'moyasar';
+import Moyasar from "moyasar";
 
 // Define the schema for updating the order status
 const updateStatusSchema = Joi.object({
@@ -72,63 +72,63 @@ const placeOrderMoyasar = async (req, res) => {
     await newOrder.save();
     console.log("Order saved successfully:", newOrder); // Log the saved order
 
-    const line_items = items.map((item) => ({
-      price_data: {
-        currency: currency,
-        product_data: {
-          name: item.name,
-        },
-        unit_amount: item.price * 100, // Convert to cents
-      },
-      quantity: item.quantity,
-    }));
-
-    console.log("Line Items:", line_items); // Log the line items
-
-    line_items.push({
-      price_data: {
-        currency: currency,
-        product_data: {
-          name: "Delivery Charges",
-        },
-        unit_amount: deliveryCharge * 100, // Convert to cents
-      },
-      quantity: 1,
-    });
-
-    console.log("Final Line Items with Delivery:", line_items); // Log the final line items
-
-    const session = await moyasar.checkout.sessions.create({
-      success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
+    // Prepare the payment request for Moyasar
+    const paymentData = {
+      amount: amount * 100, // Convert to smallest currency unit (e.g., cents)
+      currency: "SAR",
+      description: `Order ID: ${newOrder._id}`,
+      callback_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
       cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
-      line_items,
-      mode: "payment",
-    });
+      metadata: {
+        orderId: newOrder._id,
+        userId: userId,
+      },
+      source: {
+        type: "creditcard", // You can change this to "applepay" or "stcpay" if needed
+      },
+    };
 
-    console.log("Moyasar Session Created:", session); // Log the Moyasar session
+    // Make a POST request to Moyasar's payment API
+    const moyasarResponse = await axios.post(
+      "https://api.moyasar.com/v1/payments",
+      paymentData,
+      {
+        auth: {
+          username: process.env.MOYASAR_SECRET_KEY,
+          password: "", // Moyasar API uses only the secret key as the username
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    res.json({ success: true, session_url: session.url });
+    console.log("Moyasar Payment Response:", moyasarResponse.data);
+
+    // Redirect the user to the payment URL
+    const paymentUrl = moyasarResponse.data.source.transaction_url;
+    res.json({ success: true, payment_url: paymentUrl });
   } catch (error) {
     console.error("Error in placeOrderMoyasar:", error); // Log the full error
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-const verifyMoyasar = async (req, res) => {
-  const { orderId, success, userId } = req.body;
-
+const verifyMoyasarWebhook = async (req, res) => {
   try {
-    if (success == "true") {
+    const { id, status, metadata } = req.body;
+
+    if (status === "paid") {
+      const orderId = metadata.orderId;
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-      await userModel.findByIdAndUpdate(userId, { cartData: {} });
       res.json({ success: true });
     } else {
-      await orderModel.findByIdAndDelete(orderId);
+      await orderModel.findByIdAndDelete(metadata.orderId);
       res.json({ success: false });
     }
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error in verifyMoyasarWebhook:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -215,5 +215,5 @@ export {
   allOrders,
   userOrders,
   updateStatus,
-  verifyMoyasar
+  verifyMoyasarWebhook
 };
