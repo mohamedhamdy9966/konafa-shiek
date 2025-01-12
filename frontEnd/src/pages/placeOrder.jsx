@@ -42,6 +42,7 @@ const PlaceOrder = () => {
         toast.error("Your cart is empty");
         return;
       }
+  
       let orderItems = [];
       for (const productId in cartItems) {
         for (const size in cartItems[productId]) {
@@ -69,12 +70,15 @@ const PlaceOrder = () => {
           }
         }
       }
+  
       console.log("Order Items:", orderItems);
+  
       const userId = localStorage.getItem("userId") || token?.userId || "";
       if (!userId) {
         toast.error("User ID is missing. Please log in.");
         return;
       }
+  
       let orderData = {
         userId,
         address: formData,
@@ -82,7 +86,9 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
         paymentMethod: method,
       };
-      console.log(orderData);
+  
+      console.log("Order Data:", orderData);
+  
       switch (method) {
         case "COD": {
           const response = await axios.post(
@@ -116,6 +122,7 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
+      console.error("Error in onSubmitHandler:", error); // Log the full error
       toast.error(error.message);
     }
   };

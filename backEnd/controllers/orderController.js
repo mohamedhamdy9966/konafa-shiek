@@ -44,8 +44,17 @@ const placeOrder = async (req, res) => {
 
 const placeOrderMoyasar = async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Log the request body
+    console.log("Request Headers:", req.headers); // Log the request headers
+
     const { userId, amount, items, address } = req.body;
     const { origin } = req.headers;
+
+    // Validate required fields
+    if (!userId || !amount || !items || !address || !origin) {
+      console.error("Missing required fields");
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
 
     const orderData = {
       userId,
@@ -57,8 +66,11 @@ const placeOrderMoyasar = async (req, res) => {
       date: Date.now(),
     };
 
+    console.log("Order Data:", orderData); // Log the order data
+
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    console.log("Order saved successfully:", newOrder); // Log the saved order
 
     const line_items = items.map((item) => ({
       price_data: {
@@ -66,10 +78,12 @@ const placeOrderMoyasar = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: item.price * 100,
+        unit_amount: item.price * 100, // Convert to cents
       },
       quantity: item.quantity,
     }));
+
+    console.log("Line Items:", line_items); // Log the line items
 
     line_items.push({
       price_data: {
@@ -77,10 +91,12 @@ const placeOrderMoyasar = async (req, res) => {
         product_data: {
           name: "Delivery Charges",
         },
-        unit_amount: deliveryCharge * 100,
+        unit_amount: deliveryCharge * 100, // Convert to cents
       },
       quantity: 1,
     });
+
+    console.log("Final Line Items with Delivery:", line_items); // Log the final line items
 
     const session = await moyasar.checkout.sessions.create({
       success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
@@ -89,9 +105,11 @@ const placeOrderMoyasar = async (req, res) => {
       mode: "payment",
     });
 
+    console.log("Moyasar Session Created:", session); // Log the Moyasar session
+
     res.json({ success: true, session_url: session.url });
   } catch (error) {
-    console.error("Error in placeOrderMoyasar:", error);
+    console.error("Error in placeOrderMoyasar:", error); // Log the full error
     res.status(500).json({ success: false, message: error.message });
   }
 };
