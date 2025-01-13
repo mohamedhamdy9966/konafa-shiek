@@ -16,7 +16,7 @@ const Verify = () => {
           return null;
         }
         const response = await axios.post(
-          backendUrl + '/api/order/verifyMoyasar',
+          backendUrl + '/api/order/verifyMoyasarWebhook',
           { orderId, success, userId: localStorage.getItem("userId") },
           { headers: { Authorization: `Bearer ${token}` } }
         );
