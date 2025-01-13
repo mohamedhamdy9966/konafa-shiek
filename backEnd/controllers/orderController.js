@@ -117,14 +117,13 @@ const placeOrderMoyasar = async (req, res) => {
 
 const verifyMoyasarWebhook = async (req, res) => {
   try {
-    const { id, status, metadata } = req.body;
+    const { orderId, success, userId } = req.body;
 
-    if (status === "paid") {
-      const orderId = metadata.orderId;
+    if (success === "true") {
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
       res.json({ success: true });
     } else {
-      await orderModel.findByIdAndDelete(metadata.orderId);
+      await orderModel.findByIdAndDelete(orderId);
       res.json({ success: false });
     }
   } catch (error) {
