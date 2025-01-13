@@ -93,12 +93,9 @@ const placeOrderMoyasar = async (req, res) => {
       "https://api.moyasar.com/v1/payments",
       paymentData,
       {
-        auth: {
-          username: process.env.MOYASAR_SECRET_KEY,
-          password: "", // Moyasar API uses only the secret key as the username
-        },
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ":").toString("base64")}`,
         },
       }
     );
