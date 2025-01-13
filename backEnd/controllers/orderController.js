@@ -44,9 +44,6 @@ const placeOrder = async (req, res) => {
 
 const placeOrderMoyasar = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Log the request body
-    console.log("Request Headers:", req.headers); // Log the request headers
-
     const { userId, amount, items, address } = req.body;
     const { origin } = req.headers;
 
@@ -84,9 +81,16 @@ const placeOrderMoyasar = async (req, res) => {
         userId: userId,
       },
       source: {
-        type: "creditcard", // You can change this to "applepay" or "stcpay" if needed
+        type: "creditcard",
+        name: "Test User", // Cardholder name
+        number: "4111111111111111", // Test card number
+        cvc: "123", // Test CVC
+        month: "12", // Expiration month
+        year: "2025", // Expiration year
       },
     };
+
+    console.log("Payment Data:", paymentData); // Log the payment data
 
     // Make a POST request to Moyasar's payment API
     const moyasarResponse = await axios.post(
