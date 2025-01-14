@@ -9,6 +9,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     try {
@@ -20,16 +21,31 @@ const Login = () => {
         if (signUpResponse.data.success) {
           const { token, userId } = signUpResponse.data;
           setToken(token);
-          localStorage.setItem("userId", userId)
+          localStorage.setItem("userId", userId);
           localStorage.setItem("token", token);
         } else {
           toast.error(signUpResponse.data.message);
         }
       } else {
+        // Check if the credentials are for an admin
+        const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
+          email,
+          password,
+        });
+
+        if (adminResponse.data.success) {
+          setToken(adminResponse.data.token);
+          localStorage.setItem("token", adminResponse.data.token);
+          navigate('/admin'); // Redirect to admin panel
+          return;
+        }
+
+        // If not admin, try regular user login
         const response = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
         });
+
         if (response.data.success) {
           const { token, userId } = response.data;
           setToken(token);
@@ -44,11 +60,12 @@ const Login = () => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (token) {
-      navigate('/')
+      navigate('/');
     }
-  },[token])
+  }, [token]);
+
   return (
     <form
       onSubmit={onSubmitHandler}
