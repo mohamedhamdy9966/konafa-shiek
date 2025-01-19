@@ -14,18 +14,18 @@ const Login = ({ setToken }) => {
     event.preventDefault();
     try {
       if (currentState === "SignUp") {
-        // Handle user sign-up
-        const signUpResponse = await axios.post(
-          backendUrl + "/api/user/register",
-          { name, email, password }
-        );
+        const signUpResponse = await axios.post(backendUrl + "/api/user/register", {
+          name,
+          email,
+          password,
+        });
         if (signUpResponse.data.success) {
           const { token, userId } = signUpResponse.data;
           setToken(token);
           localStorage.setItem("userId", userId);
           localStorage.setItem("token", token);
           toast.success("Account created successfully!");
-          navigate("/"); // Redirect to home page after sign-up
+          navigate("/");
         } else {
           toast.error(signUpResponse.data.message);
         }
@@ -35,28 +35,28 @@ const Login = ({ setToken }) => {
           email,
           password,
         });
-
+  
         if (adminResponse.data.success) {
           const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
           setToken(adminToken);
           localStorage.setItem("token", adminToken);
-          navigate("/admin"); // Redirect to admin panel
+          navigate("/admin");
           return;
         }
-
+  
         // If not admin, try regular user login
         const response = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
         });
-
+  
         if (response.data.success) {
           const { token, userId } = response.data;
           setToken(token);
           localStorage.setItem("userId", userId);
           localStorage.setItem("token", token);
           toast.success("Logged in successfully!");
-          navigate("/"); // Redirect to home page after login
+          navigate("/");
         } else {
           toast.error(response.data.message);
         }
