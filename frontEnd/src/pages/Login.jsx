@@ -30,21 +30,7 @@ const Login = ({ setToken }) => {
           toast.error(signUpResponse.data.message);
         }
       } else {
-        // Check if the credentials are for an admin
-        const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
-          email,
-          password,
-        });
-  
-        if (adminResponse.data.success) {
-          const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
-          setToken(adminToken);
-          localStorage.setItem("token", adminToken);
-          navigate("/admin");
-          return;
-        }
-  
-        // If not admin, try regular user login
+        // First, try regular user login
         const response = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
@@ -58,7 +44,20 @@ const Login = ({ setToken }) => {
           toast.success("Logged in successfully!");
           navigate("/");
         } else {
-          toast.error(response.data.message);
+          // If regular login fails, try admin login
+          const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
+            email,
+            password,
+          });
+  
+          if (adminResponse.data.success) {
+            const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
+            setToken(adminToken);
+            localStorage.setItem("token", adminToken);
+            navigate("/admin");
+          } else {
+            toast.error("Invalid email or password");
+          }
         }
       }
     } catch (error) {

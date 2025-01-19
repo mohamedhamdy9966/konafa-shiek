@@ -18,9 +18,13 @@ import contact_img from "./contact_img.webp";
 import stripe_logo from "./stripe_logo.png";
 import cross_icon from "./cross_icon.png";
 import paytabs_logo from "./paytabs_logo.png";
+import add_icon from './add_icon.png'
+import order_icon from './order_icon.png'
 
 export const assets = {
   menu_1,
+  add_icon,
+  order_icon,
   upload_area,
   logo,
   hero,
