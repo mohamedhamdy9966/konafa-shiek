@@ -14,13 +14,13 @@ import SearchBar from "./components/SearchBar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Verify";
-import AdminLogin from "./components/AdminLogin"; // Import AdminLogin component
-import AdminNavbar from "./components/AdminNavbar"; // Import AdminNavbar component
-import AdminSidebar from "./components/AdminSidebar"; // Import AdminSidebar component
-import AdminAdd from "./pages/AdminAdd"; // Import Add component
-import AdminList from "./pages/AdminList"; // Import List component
-import AdminOrders from "./pages/AdminOrders"; // Import AdminOrders component
+import AdminNavbar from "./components/AdminNavbar";
+import AdminSidebar from "./components/AdminSidebar";
+import AdminAdd from "./pages/AdminAdd";
+import AdminList from "./pages/AdminList";
+import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
@@ -44,9 +44,30 @@ const App = () => {
             <AdminSidebar />
             <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
               <Routes>
-                <Route path="/admin/add" element={<AdminAdd token={token} />} />
-                <Route path="/admin/list" element={<AdminList token={token} />} />
-                <Route path="/admin/orders" element={<AdminOrders token={token} />} />
+                <Route
+                  path="/admin/add"
+                  element={
+                    <ProtectedRoute>
+                      <AdminAdd token={token} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/list"
+                  element={
+                    <ProtectedRoute>
+                      <AdminList token={token} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/orders"
+                  element={
+                    <ProtectedRoute>
+                      <AdminOrders token={token} />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </div>
           </div>
@@ -67,7 +88,6 @@ const App = () => {
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/verify" element={<Verify />} />
-            <Route path="/admin/login" element={<AdminLogin setToken={setToken} />} />
           </Routes>
           <Footer />
         </>

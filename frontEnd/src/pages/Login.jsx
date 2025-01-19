@@ -32,20 +32,21 @@ const Login = () => {
           email,
           password,
         });
-
+  
         if (adminResponse.data.success) {
-          setToken(adminResponse.data.token);
-          localStorage.setItem("token", adminResponse.data.token);
+          const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
+          setToken(adminToken);
+          localStorage.setItem("token", adminToken);
           navigate('/admin'); // Redirect to admin panel
           return;
         }
-
+  
         // If not admin, try regular user login
         const response = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
         });
-
+  
         if (response.data.success) {
           const { token, userId } = response.data;
           setToken(token);
