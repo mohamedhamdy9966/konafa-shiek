@@ -5,9 +5,8 @@ import { ShopContext } from "../context/ShopContext";
 const ProtectedRoute = ({ children }) => {
   const { token } = useContext(ShopContext);
 
-  // Check if the token starts with "admin_"
-  if (!token || !token.startsWith("admin_")) {
-    return <Navigate to="/admin/login" />;
+  if (!token) {
+    return <Navigate to="/login" />;
   }
 
   return children;
