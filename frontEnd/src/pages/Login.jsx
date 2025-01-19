@@ -30,32 +30,39 @@ const Login = ({ setToken }) => {
           toast.error(signUpResponse.data.message);
         }
       } else {
-        // First, try regular user login
-        const response = await axios.post(backendUrl + "/api/user/login", {
-          email,
-          password,
-        });
-  
-        if (response.data.success) {
-          const { token, userId } = response.data;
-          setToken(token);
-          localStorage.setItem("userId", userId);
-          localStorage.setItem("token", token);
-          toast.success("Logged in successfully!");
-          navigate("/");
-        } else {
-          // If regular login fails, try admin login
-          const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
+        // Try normal user login first
+        try {
+          const response = await axios.post(backendUrl + "/api/user/login", {
             email,
             password,
           });
   
-          if (adminResponse.data.success) {
-            const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
-            setToken(adminToken);
-            localStorage.setItem("token", adminToken);
-            navigate("/admin");
-          } else {
+          if (response.data.success) {
+            const { token, userId } = response.data;
+            setToken(token);
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("token", token);
+            toast.success("Logged in successfully!");
+            navigate("/");
+            return; // Exit after successful login
+          }
+        } catch (userError) {
+          // If normal user login fails, try admin login
+          try {
+            const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
+              email,
+              password,
+            });
+  
+            if (adminResponse.data.success) {
+              const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
+              setToken(adminToken);
+              localStorage.setItem("token", adminToken);
+              navigate("/admin");
+              return; // Exit after successful admin login
+            }
+          } catch (adminError) {
+            // If both attempts fail, show an error
             toast.error("Invalid email or password");
           }
         }
