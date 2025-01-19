@@ -20,7 +20,7 @@ import AdminAdd from "./pages/AdminAdd";
 import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
