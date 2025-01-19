@@ -21,7 +21,7 @@ import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
-import jwt from "jsonwebtoken";
+import jwtDecode from "jwt-decode";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
@@ -34,7 +34,15 @@ const App = () => {
   }, [token]);
 
   // Decode the token to check if the user is an admin
-  const isAdmin = token ? jwt.decode(token)?.isAdmin : false;
+  let isAdmin = false;
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token); // Use jwt-decode here
+      isAdmin = decodedToken.isAdmin || false;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  }
 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]">
