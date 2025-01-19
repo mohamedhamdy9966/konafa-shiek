@@ -37,13 +37,15 @@ const App = () => {
   let isAdmin = false;
   if (token) {
     try {
+      console.log("Token before decoding:", token); // Debug the token
       const decodedToken = jwtDecode(token); // Use jwt-decode here
+      console.log("Decoded token:", decodedToken); // Debug the decoded token
       isAdmin = decodedToken.isAdmin || false;
     } catch (error) {
       console.error("Error decoding token:", error);
     }
   }
-
+  
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]">
       <ToastContainer />
