@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -25,6 +25,7 @@ const Login = ({ setToken }) => {
           localStorage.setItem("userId", userId);
           localStorage.setItem("token", token);
           toast.success("Account created successfully!");
+          navigate("/"); // Redirect to home page after sign-up
         } else {
           toast.error(signUpResponse.data.message);
         }
@@ -39,7 +40,7 @@ const Login = ({ setToken }) => {
           const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
           setToken(adminToken);
           localStorage.setItem("token", adminToken);
-          navigate('/admin'); // Redirect to admin panel
+          navigate("/admin"); // Redirect to admin panel
           return;
         }
 
@@ -55,6 +56,7 @@ const Login = ({ setToken }) => {
           localStorage.setItem("userId", userId);
           localStorage.setItem("token", token);
           toast.success("Logged in successfully!");
+          navigate("/"); // Redirect to home page after login
         } else {
           toast.error(response.data.message);
         }
@@ -63,12 +65,6 @@ const Login = ({ setToken }) => {
       toast.error(error.message);
     }
   };
-
-  useEffect(() => {
-    if (token) {
-      navigate('/');
-    }
-  }, [token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center w-full">
