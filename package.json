@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "dotenv": "^16.4.7",
-    "moyasar": "^0.5.1",
-     "jwt-decode": "^3.1.2"
+    "moyasar": "^0.5.1"
   }
 }
