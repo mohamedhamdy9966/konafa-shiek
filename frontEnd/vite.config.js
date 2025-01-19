@@ -1,18 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import commonjs from "@rollup/plugin-commonjs"; // Add this
+import commonjs from "@rollup/plugin-commonjs";
 
 export default defineConfig({
   plugins: [
     react(),
-    commonjs(), // Add this to handle CommonJS modules
+    commonjs(),
   ],
   server: {
     port: 5173,
   },
   build: {
     rollupOptions: {
-      external: [], // Add any external dependencies if needed
+      external: ['react-toastify'], // Add react-toastify here
     },
   },
 });
