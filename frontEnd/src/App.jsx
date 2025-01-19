@@ -21,6 +21,7 @@ import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
+import jwt from "jsonwebtoken";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
