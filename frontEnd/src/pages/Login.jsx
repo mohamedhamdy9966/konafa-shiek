@@ -55,9 +55,9 @@ const Login = ({ setToken }) => {
             });
   
             if (adminResponse.data.success) {
-              const adminToken = "admin_" + adminResponse.data.token; // Prefix token with "admin_"
-              setToken(adminToken);
-              localStorage.setItem("token", adminToken);
+              const { token } = adminResponse.data;
+              setToken(token);
+              localStorage.setItem("token", token);
               navigate("/admin");
               return; // Exit after successful admin login
             }

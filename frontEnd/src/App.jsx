@@ -32,10 +32,13 @@ const App = () => {
     localStorage.setItem("token", token);
   }, [token]);
 
+  // Decode the token to check if the user is an admin
+  const isAdmin = token ? jwt.decode(token)?.isAdmin : false;
+
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]">
       <ToastContainer />
-      {token && token.startsWith("admin_") ? (
+      {isAdmin ? (
         // Admin Panel Layout
         <>
           <AdminNavbar setToken={setToken} />
