@@ -29,23 +29,22 @@ export const currency = "SAR";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("token", token);
-  }, [token]);
-
-  // Decode the token to check if the user is an admin
-  let isAdmin = false;
-  if (token) {
-    try {
-      // console.log("Token before decoding:", token);
-      const decodedToken = jwtDecode(token); // Use jwt-decode here
-      // console.log("Decoded token:", decodedToken);
-      isAdmin = decodedToken.isAdmin || false;
-    } catch (error) {
-      console.error("Error decoding token:", error);
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setIsAdmin(decodedToken.isAdmin || false);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setIsAdmin(false);
+      }
+    } else {
+      setIsAdmin(false);
     }
-  }
+  }, [token]);
 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]">
@@ -83,6 +82,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="*" element={<Navigate to="/admin/add" />} />
               </Routes>
             </div>
           </div>
@@ -103,6 +103,7 @@ const App = () => {
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/verify" element={<Verify />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Footer />
         </>

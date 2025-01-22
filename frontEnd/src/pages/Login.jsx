@@ -58,7 +58,7 @@ const Login = ({ setToken }) => {
               const { token } = adminResponse.data;
               setToken(token);
               localStorage.setItem("token", token);
-              navigate("/admin");
+              navigate("/add"); // Redirect to admin dashboard
               return; // Exit after successful admin login
             }
           } catch (adminError) {
