@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const Login = ({ setToken }) => {
   const [currentState, setCurrentState] = useState("Login");
-  const { navigate, backendUrl } = useContext(ShopContext);
+  const { navigate, backendUrl, getUserCart } = useContext(ShopContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,7 +25,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/");
+        await handleSuccess(response.data, "/");
         toast.success("Logged in successfully!");
       }
     } catch (err) {
@@ -41,7 +41,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/add");
+        await handleSuccess(response.data, "/add");
         toast.success("Admin logged in successfully!");
       }
     } catch (err) {
@@ -58,7 +58,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/");
+        await handleSuccess(response.data, "/");
         toast.success("Account created successfully!");
       } else {
         toast.error(response.data.message || "Sign-up failed");
@@ -68,13 +68,28 @@ const Login = ({ setToken }) => {
     }
   };
 
+  // const handleSuccess = async (data, redirectPath) => {
+  //   const { token, userId } = data;
+  //   setToken(token);
+  //   localStorage.setItem("token", token);
+  //   if (userId) localStorage.setItem("userId", userId);
+  //   navigate(redirectPath);
+  // };
+
   const handleSuccess = (data, redirectPath) => {
     const { token, userId } = data;
     setToken(token);
     localStorage.setItem("token", token);
     if (userId) localStorage.setItem("userId", userId);
-    navigate(redirectPath);
+  
+    // Fetch the user's cart before navigating
+    if (token) {
+      getUserCart(token).then(() => navigate(redirectPath));
+    } else {
+      navigate(redirectPath);
+    }
   };
+  
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();

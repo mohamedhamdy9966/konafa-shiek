@@ -203,12 +203,21 @@ const ShopContextProvider = (props) => {
     getProductsData();
   }, []);
 
+  // useEffect(() => {
+  //   if (!token && localStorage.getItem("token")) {
+  //     setToken(localStorage.getItem("token"));
+  //     getUserCart(localStorage.getItem("token"));
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (!token && localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-      getUserCart(localStorage.getItem("token"));
+    const storedToken = localStorage.getItem("token");
+    if (storedToken && !token) {
+      setToken(storedToken);
+      getUserCart(storedToken); // Load the cart as soon as the token is available
     }
-  }, []);
+  }, [token]);
+  
 
   const value = {
     products,
