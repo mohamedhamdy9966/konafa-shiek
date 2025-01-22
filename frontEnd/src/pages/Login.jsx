@@ -6,65 +6,87 @@ import { toast } from "react-toastify";
 const Login = ({ setToken }) => {
   const [currentState, setCurrentState] = useState("Login");
   const { navigate, backendUrl } = useContext(ShopContext);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUserLogin = async () => {
+    const { email, password } = formData;
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/login`, {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        handleSuccess(response.data, "/");
+        toast.success("Logged in successfully!");
+      }
+    } catch (err) {
+      throw new Error("Invalid user credentials");
+    }
+  };
+
+  const handleAdminLogin = async () => {
+    const { email, password } = formData;
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/admin`, {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        handleSuccess(response.data, "/add");
+        toast.success("Admin logged in successfully!");
+      }
+    } catch (err) {
+      throw new Error("Invalid admin credentials");
+    }
+  };
+
+  const handleSignUp = async () => {
+    const { name, email, password } = formData;
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/register`, {
+        name,
+        email,
+        password,
+      });
+      if (response.data.success) {
+        handleSuccess(response.data, "/");
+        toast.success("Account created successfully!");
+      } else {
+        toast.error(response.data.message || "Sign-up failed");
+      }
+    } catch (err) {
+      toast.error(err.message || "Sign-up failed");
+    }
+  };
+
+  const handleSuccess = (data, redirectPath) => {
+    const { token, userId } = data;
+    setToken(token);
+    localStorage.setItem("token", token);
+    if (userId) localStorage.setItem("userId", userId);
+    navigate(redirectPath);
+  };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
     try {
       if (currentState === "SignUp") {
-        const signUpResponse = await axios.post(backendUrl + "/api/user/register", {
-          name,
-          email,
-          password,
-        });
-        if (signUpResponse.data.success) {
-          const { token, userId } = signUpResponse.data;
-          setToken(token);
-          localStorage.setItem("userId", userId);
-          localStorage.setItem("token", token);
-          toast.success("Account created successfully!");
-          navigate("/");
-        } else {
-          toast.error(signUpResponse.data.message);
-        }
+        await handleSignUp();
       } else {
-        // Try normal user login first
         try {
-          const response = await axios.post(backendUrl + "/api/user/login", {
-            email,
-            password,
-          });
-  
-          if (response.data.success) {
-            const { token, userId } = response.data;
-            setToken(token);
-            localStorage.setItem("userId", userId);
-            localStorage.setItem("token", token);
-            toast.success("Logged in successfully!");
-            navigate("/");
-            return; // Exit after successful login
-          }
-        } catch (userError) {
-          // If normal user login fails, try admin login
-          try {
-            const adminResponse = await axios.post(backendUrl + "/api/user/admin", {
-              email,
-              password,
-            });
-  
-            if (adminResponse.data.success) {
-              const { token } = adminResponse.data;
-              setToken(token);
-              localStorage.setItem("token", token);
-              navigate("/add"); // Redirect to admin dashboard
-              return; // Exit after successful admin login
-            }
-          } catch (adminError) {
-            // If both attempts fail, show an error
-            toast.error("Invalid email or password");
-          }
+          await handleUserLogin();
+        } catch {
+          await handleAdminLogin();
         }
       }
     } catch (error) {
@@ -83,8 +105,9 @@ const Login = ({ setToken }) => {
             <div className="mb-3">
               <p className="text-sm font-medium text-gray-700 mb-2">Name</p>
               <input
-                onChange={(e) => setName(e.target.value)}
-                value={name}
+                name="name"
+                onChange={handleChange}
+                value={formData.name}
                 type="text"
                 className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
                 placeholder="Name"
@@ -95,8 +118,9 @@ const Login = ({ setToken }) => {
           <div className="mb-3">
             <p className="text-sm font-medium text-gray-700 mb-2">Email</p>
             <input
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              name="email"
+              onChange={handleChange}
+              value={formData.email}
               type="email"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
               placeholder="Email"
@@ -106,8 +130,9 @@ const Login = ({ setToken }) => {
           <div className="mb-3">
             <p className="text-sm font-medium text-gray-700 mb-2">Password</p>
             <input
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
+              name="password"
+              onChange={handleChange}
+              value={formData.password}
               type="password"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
               placeholder="Password"
@@ -116,21 +141,16 @@ const Login = ({ setToken }) => {
           </div>
           <div className="w-full flex justify-between text-sm mt-[-8px] mb-4">
             <p className="cursor-pointer">Forgot Your Password?</p>
-            {currentState === "Login" ? (
-              <p
-                onClick={() => setCurrentState("SignUp")}
-                className="cursor-pointer text-blue-500"
-              >
-                Create Account
-              </p>
-            ) : (
-              <p
-                onClick={() => setCurrentState("Login")}
-                className="cursor-pointer text-blue-500"
-              >
-                Login Here
-              </p>
-            )}
+            <p
+              onClick={() =>
+                setCurrentState((prev) =>
+                  prev === "Login" ? "SignUp" : "Login"
+                )
+              }
+              className="cursor-pointer text-blue-500"
+            >
+              {currentState === "Login" ? "Create Account" : "Login Here"}
+            </p>
           </div>
           <button
             className="mt-2 w-full py-2 px-4 rounded-md text-white bg-black"

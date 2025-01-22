@@ -20,7 +20,7 @@ import AdminAdd from "./pages/AdminAdd";
 import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
-import ProtectedRoute from "./components/ProtectedRoute";
+// import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -61,25 +61,25 @@ const App = () => {
                 <Route
                   path="/add"
                   element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                       <AdminAdd token={token} />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                   }
                 />
                 <Route
                   path="/list"
                   element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                       <AdminList token={token} />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                   }
                 />
                 <Route
                   path="/konafaOrders"
                   element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                       <AdminOrders token={token} />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                   }
                 />
                 <Route path="*" element={<Navigate to="/add" />} />
