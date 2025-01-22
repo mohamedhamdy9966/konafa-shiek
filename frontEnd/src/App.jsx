@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
@@ -82,7 +82,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="*" element={<Navigate to="/admin/add" />} />
+                <Route path="*" element={<Navigate to="/add" />} />
               </Routes>
             </div>
           </div>
