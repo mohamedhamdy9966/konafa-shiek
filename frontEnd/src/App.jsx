@@ -23,6 +23,7 @@ import { useState, useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
 
@@ -59,7 +60,7 @@ const App = () => {
             <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
               <Routes>
                 <Route
-                  path="/admin/add"
+                  path="/add"
                   element={
                     <ProtectedRoute>
                       <AdminAdd token={token} />
@@ -67,7 +68,7 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="/admin/list"
+                  path="/list"
                   element={
                     <ProtectedRoute>
                       <AdminList token={token} />
@@ -75,7 +76,7 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="/admin/orders"
+                  path="/konafaOrders"
                   element={
                     <ProtectedRoute>
                       <AdminOrders token={token} />
