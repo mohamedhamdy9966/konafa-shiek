@@ -7,21 +7,13 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
   const currency = "SAR";
-
   const delivery_fee = 0;
-
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   const [search, setSearch] = useState("");
-
   const [showSearch, setShowSearch] = useState(false);
-
   const [cartItems, setCartItems] = useState({});
-
   const [products, setProducts] = useState([]);
-
   const [token, setToken] = useState("");
-
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size, sauceSize = 0, selectedSauce = []) => {
@@ -38,13 +30,13 @@ const ShopContextProvider = (props) => {
           ...cartData[itemId][size],
           quantity: (cartData[itemId][size].quantity || 0) + 1,
           sauceSize,
-          selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [], // Ensure selectedSauce is an array
+          selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
         };
       } else {
         cartData[itemId][size] = {
           quantity: 1,
           sauceSize,
-          selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [], // Ensure selectedSauce is an array
+          selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
         };
       }
     } else {
@@ -52,7 +44,7 @@ const ShopContextProvider = (props) => {
       cartData[itemId][size] = {
         quantity: 1,
         sauceSize,
-        selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [], // Ensure selectedSauce is an array
+        selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
       };
     }
   
@@ -81,9 +73,8 @@ const ShopContextProvider = (props) => {
     for (const items in cartItems) {
       for (const item in cartItems[items]) {
         try {
-          // Check if the quantity is greater than 0
           if (cartItems[items][item].quantity > 0) {
-            totalCount += cartItems[items][item].quantity; // Add the quantity to the total count
+            totalCount += cartItems[items][item].quantity;
           }
         } catch (error) {
           console.log(error);
@@ -135,19 +126,14 @@ const ShopContextProvider = (props) => {
     let totalAmount = 0;
 
     for (const items in cartItems) {
-      // Find the product details by matching _id
       const itemInfo = products.find((product) => product._id === items);
-
-      // Check if the product exists
       if (!itemInfo) continue;
 
       for (const size in cartItems[items]) {
-        // Add product price multiplied by quantity
         const quantity = cartItems[items][size].quantity;
         const sauceSize = cartItems[items][size].sauceSize || 0;
 
         if (quantity > 0) {
-          // Check if the size and price exist for the product
           if (itemInfo.sizes && itemInfo.sizes[size]?.price) {
             totalAmount += (itemInfo.sizes[size].price + sauceSize) * quantity;
           } else {
@@ -190,7 +176,7 @@ const ShopContextProvider = (props) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (getUserCartResponse.data.success) {
-        setCartItems(getUserCartResponse.data.cartData || {}); // Ensure cartData is an object
+        setCartItems(getUserCartResponse.data.cartData || {});
       } else {
         toast.error("Failed to fetch cart data");
       }
@@ -208,7 +194,7 @@ const ShopContextProvider = (props) => {
       setToken(localStorage.getItem("token"));
       getUserCart(localStorage.getItem("token"));
     }
-  }, []);
+  }, [token]);
 
   const value = {
     products,
