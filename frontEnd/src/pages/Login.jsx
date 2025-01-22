@@ -25,7 +25,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/");
+        await handleSuccess(response.data, "/");
         toast.success("Logged in successfully!");
       }
     } catch (err) {
@@ -41,7 +41,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/add");
+        await handleSuccess(response.data, "/add");
         toast.success("Admin logged in successfully!");
       }
     } catch (err) {
@@ -58,7 +58,7 @@ const Login = ({ setToken }) => {
         password,
       });
       if (response.data.success) {
-        handleSuccess(response.data, "/");
+        await handleSuccess(response.data, "/");
         toast.success("Account created successfully!");
       } else {
         toast.error(response.data.message || "Sign-up failed");
@@ -68,7 +68,7 @@ const Login = ({ setToken }) => {
     }
   };
 
-  const handleSuccess = (data, redirectPath) => {
+  const handleSuccess = async (data, redirectPath) => {
     const { token, userId } = data;
     setToken(token);
     localStorage.setItem("token", token);
