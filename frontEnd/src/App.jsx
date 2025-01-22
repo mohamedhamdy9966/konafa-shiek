@@ -38,9 +38,9 @@ const App = () => {
   let isAdmin = false;
   if (token) {
     try {
-      console.log("Token before decoding:", token); // Debug the token
+      // console.log("Token before decoding:", token);
       const decodedToken = jwtDecode(token); // Use jwt-decode here
-      console.log("Decoded token:", decodedToken); // Debug the decoded token
+      // console.log("Decoded token:", decodedToken);
       isAdmin = decodedToken.isAdmin || false;
     } catch (error) {
       console.error("Error decoding token:", error);
