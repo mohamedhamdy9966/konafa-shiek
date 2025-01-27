@@ -100,7 +100,7 @@ const Product = () => {
               ? `السعر قبل العرض : ${
                   productData.sizes.get(size).offer
                 } SAR `
-              : "السعرات الحرارية غير معروفة"}
+              : `{""}`}
           </p>
           <p className="mt-5 text-3xl font-medium">
             {currency}
