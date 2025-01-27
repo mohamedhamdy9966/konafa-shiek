@@ -17,11 +17,14 @@ android {
         }
     }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+        debug {
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "app-debug.apk"
+                }
+            }
+        } // ← Close debug block
+    } // ← Close buildTypes block
 }
 
 repositories {

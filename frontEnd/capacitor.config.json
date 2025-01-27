@@ -1,5 +1,6 @@
 {
   "appId": "com.konafasheek.app",
   "appName": "Konafa-Sheek",
-  "webDir": "dist"
+  "webDir": "dist",
+  "bundledWebRuntime": false
 }
