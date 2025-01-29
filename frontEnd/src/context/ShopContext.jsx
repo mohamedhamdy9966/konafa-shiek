@@ -21,17 +21,22 @@ const ShopContextProvider = (props) => {
       toast.error("Please Select Size");
       return null;
     }
-
+  
     let cartData = structuredClone(cartItems);
-
+  
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
-        cartData[itemId][size] = {
-          ...cartData[itemId][size],
-          quantity: (cartData[itemId][size].quantity || 0) + 1,
-          sauceSize,
-          selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
-        };
+        // If the same size is selected again, toggle the sauce size
+        if (cartData[itemId][size].sauceSize === sauceSize) {
+          cartData[itemId][size].sauceSize = 0;
+          cartData[itemId][size].selectedSauce = [];
+        } else {
+          cartData[itemId][size] = {
+            ...cartData[itemId][size],
+            sauceSize,
+            selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
+          };
+        }
       } else {
         cartData[itemId][size] = {
           quantity: 1,
@@ -47,9 +52,9 @@ const ShopContextProvider = (props) => {
         selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
       };
     }
-
+  
     setCartItems(cartData);
-
+  
     if (token) {
       try {
         const userId = localStorage.getItem("userId");

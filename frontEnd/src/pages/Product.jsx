@@ -13,6 +13,7 @@ const Product = () => {
   const [size, setSize] = useState("S");
   const [sauceSize, setSauceSize] = useState(0);
   const [selectedSauce, setSelectedSauce] = useState([]);
+  const [isSauceSizeSelected, setIsSauceSizeSelected] = useState(false);
 
   const fetchProductData = async () => {
     products.find((item) => {
@@ -26,6 +27,7 @@ const Product = () => {
         setSize("S");
         setSauceSize(0);
         setSelectedSauce([]);
+        setIsSauceSizeSelected(false);
         return null;
       }
     });
@@ -35,13 +37,32 @@ const Product = () => {
     fetchProductData();
   }, [productId, products]);
 
-  const handleSauceTypeToggle = (sauce) => {
-    setSelectedSauce((prev) =>
-      prev.includes(sauce)
-        ? prev.filter((item) => item !== sauce)
-        : [...prev, sauce]
-    );
+  const handleSizeClick = (key) => {
+    if (size === key) {
+      setSize(""); // Reset size if the same size is clicked again
+      setSauceSize(0); // Reset sauce size
+      setSelectedSauce([]); // Reset selected sauce
+      setIsSauceSizeSelected(false); // Reset sauce size selection state
+    } else {
+      setSize(key);
+    }
   };
+
+  const handleSauceSizeClick = (size) => {
+    setSauceSize(size);
+    setIsSauceSizeSelected(true); // Set sauce size selection state to true
+  };
+
+  const handleSauceTypeToggle = (sauce) => {
+    if (isSauceSizeSelected) {
+      setSelectedSauce((prev) =>
+        prev.includes(sauce)
+          ? prev.filter((item) => item !== sauce)
+          : [...prev, sauce]
+      );
+    }
+  };
+
   if (!productData) {
     return <div className="text-center mt-10">Loading product...</div>;
   }
@@ -123,13 +144,12 @@ const Product = () => {
           <div className="mt-4">
             <p className="mb-2">Select Size:</p>
             <div className="flex gap-2">
-              {/* Ensure sizes is an array before mapping */}
               {[...productData.sizes.entries()].map(([key, value]) => {
                 if (value.enabled) {
                   return (
                     <button
                       key={key}
-                      onClick={() => setSize(key)}
+                      onClick={() => handleSizeClick(key)}
                       className={`border py-2 px-4 bg-gray-100 ${
                         size === key ? "border-orange-500" : ""
                       }`}
@@ -148,7 +168,7 @@ const Product = () => {
               {[4, 5, 10, 15].map((size) => (
                 <button
                   key={size}
-                  onClick={() => setSauceSize(size)}
+                  onClick={() => handleSauceSizeClick(size)}
                   className={`rounded-xl border py-2 px-4 bg-gray-100 ${
                     sauceSize === size ? "border-orange-500" : ""
                   }`}
@@ -176,10 +196,13 @@ const Product = () => {
                   <button
                     key={sauce}
                     onClick={() => handleSauceTypeToggle(sauce)}
+                    disabled={!isSauceSizeSelected}
                     className={`rounded-full border py-2 px-4 bg-gray-300 ${
                       selectedSauce.includes(sauce)
                         ? "border-orange-500 bg-blue-600"
                         : ""
+                    } ${
+                      !isSauceSizeSelected ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
                     {sauce}
