@@ -82,7 +82,7 @@ const placeOrderMoyasar = async (req, res) => {
       amount: Math.round(amountValue * 100), // Ensure integer halalas
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
-      callback_url: `${frontendUrl}/verify`,
+      callback_url: `https://konafa-shiek-ui.onrender.com/verify`,
       cancel_url: `${frontendUrl}/cart`,
       metadata: {
         orderId: newOrder._id.toString(),
