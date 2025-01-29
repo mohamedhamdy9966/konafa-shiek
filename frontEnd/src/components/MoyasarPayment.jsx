@@ -8,7 +8,7 @@ const MoyasarPayment = ({ amount, description, callbackUrl }) => {
       amount: amount * 100, // Amount in smallest currency unit
       currency: "SAR",
       description,
-      publishable_api_key: "pk_test_tbt3dDZ1xbpF9ngE3utqMqMTDDfZpPBJ5JVRyJKB", 
+      publishable_api_key: "pk_test_E4j6enesChywd2Po4Phx8UqSWp1cV87JsVXSWxnt", 
       callback_url: callbackUrl,
       methods: ["creditcard"], // Add more methods if needed
     });
