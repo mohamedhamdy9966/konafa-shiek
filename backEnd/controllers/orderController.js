@@ -15,6 +15,7 @@ const updateStatusSchema = Joi.object({
 // global variables
 const currency = "SAR";
 const deliveryCharge = 1;
+const frontendUrl = process.env.FRONTEND_URL;
 
 // moyasar initialize
 const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
@@ -81,8 +82,8 @@ const placeOrderMoyasar = async (req, res) => {
       amount: Math.round(amountValue * 100), // Ensure integer halalas
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
-      callback_url: `${origin}/verify`,
-      cancel_url: `${origin}/cart`,
+      callback_url: `${frontendUrl}/verify`,
+      cancel_url: `${frontendUrl}/cart`,
       metadata: {
         orderId: newOrder._id.toString(),
         userId: userId,
