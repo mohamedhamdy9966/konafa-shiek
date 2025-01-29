@@ -19,26 +19,26 @@ const Footer = () => {
 
         {/* Company Links */}
         <div>
-          <p className="text-xl font-medium mb-5">Company</p>
+          <p className="text-xl font-medium mb-5">كنافة شيك</p>
           <ul className="flex flex-col gap-2 text-gray-600">
             <li>
               <a href="/" className="hover:text-gray-800">
-                Home
+                الصفحة الرئيسية
               </a>
             </li>
             <li>
               <a href="/about" className="hover:text-gray-800">
-                About Us
+                عن كنافة شيك
               </a>
             </li>
             <li>
               <a href="/delivery" className="hover:text-gray-800">
-                Delivery
+                خدمة التوصيل
               </a>
             </li>
             <li>
               <a href="/privacy-policy" className="hover:text-gray-800">
-                Privacy Policy
+                سياسة الخصوصية
               </a>
             </li>
           </ul>
@@ -65,7 +65,7 @@ const Footer = () => {
       {/* Footer Bottom */}
       <div className="border-t border-gray-300">
         <p className="py-5 text-sm text-center">
-          &copy; {new Date().getFullYear()} All rights reserved.
+          taxi &copy; {new Date().getFullYear()} All rights reserved.
         </p>
       </div>
     </footer>
