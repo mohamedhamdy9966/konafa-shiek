@@ -241,8 +241,10 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                الدفع بالبطاقة
+                pay with moyasar 
               </p>
+            </div>
+          </div>
               {method === "moyasar" && (
                 <Checkout
                   cartTotal={getCartAmount() + delivery_fee}
@@ -253,8 +255,6 @@ const PlaceOrder = () => {
                   }}
                 />
               )}
-            </div>
-          </div>
           <div className="w-full text-end mt-8">
             <button
               type="submit"
