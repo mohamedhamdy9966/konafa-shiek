@@ -193,8 +193,14 @@ const PlaceOrder = () => {
               {" "}
               إختر فرع التسليم الأقرب إليك
             </option>
-            <option value="basateen" className="cursor-pointer"> فرع البساتين</option>
-            <option value="shamal" className="cursor-pointer"> فرع الشمال</option>
+            <option value="basateen" className="cursor-pointer">
+              {" "}
+              فرع البساتين
+            </option>
+            <option value="shamal" className="cursor-pointer">
+              {" "}
+              فرع الشمال
+            </option>
           </select>
         </div>
         <div className="flex gap-3"></div>
@@ -241,26 +247,16 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                pay with moyasar 
+                pay with moyasar
               </p>
             </div>
           </div>
-              {method === "moyasar" && (
-                <Checkout
-                  cartTotal={getCartAmount() + delivery_fee}
-                  orderId={""}
-                  onPaymentSuccess={() => {
-                    setCartItems({});
-                    navigate("/orders");
-                  }}
-                />
-              )}
           <div className="w-full text-end mt-8">
             <button
               type="submit"
               className="bg-black text-white px-16 py-3 text-sm rounded-sm"
             >
-              <h2> confirm order </h2>
+              <h2> checkout </h2>
             </button>
           </div>
         </div>

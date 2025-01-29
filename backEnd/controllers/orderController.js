@@ -58,14 +58,13 @@ const placeOrderMoyasar = async (req, res) => {
       date: Date.now(),
     };
 
-    const newOrder = new orderModel(orderData);
-    await newOrder.save();
+    const newOrder = await orderModel.create(orderData);
 
-    // Prepare payment data
+    // Create payment request with Moyasar
     const paymentData = {
       amount: amount * 100,
       currency: "SAR",
-      description: `Order ID: ${newOrder._id}`,
+      description: `Order #${newOrder._id}`,
       callback_url: `${origin}/verify?orderId=${newOrder._id}`,
       metadata: {
         orderId: newOrder._id.toString(),
@@ -73,15 +72,20 @@ const placeOrderMoyasar = async (req, res) => {
       },
     };
 
-    // Generate payment URL
+    // Use the correct Moyasar API method
     const payment = await moyasar.paymentRequest.create(paymentData);
-    res.json({ 
-      success: true, 
-      payment_url: payment.url 
+    
+    res.json({
+      success: true,
+      payment_url: payment.url
     });
+
   } catch (error) {
-    console.error("Error in placeOrderMoyasar:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Payment error:", error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: error.response?.data?.message || "Payment processing failed"
+    });
   }
 };
 
