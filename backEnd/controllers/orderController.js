@@ -47,9 +47,19 @@ const placeOrderMoyasar = async (req, res) => {
     const { userId, amount, items, address } = req.body;
     const { origin } = req.headers;
 
+    // Debugging logs
+    console.log("Moyasar Secret Key:", process.env.MOYASAR_SECRET_KEY?.substring(0, 6)); // Log first 6 chars for security
+    console.log("Origin Header:", origin);
+
     // Validate required fields
     if (!userId || !amount || !items || !address || !origin) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    // Convert amount to number
+    const amountValue = parseFloat(amount);
+    if (isNaN(amountValue)) {
+      return res.status(400).json({ success: false, message: "Invalid amount" });
     }
 
     // Create the order
@@ -57,7 +67,7 @@ const placeOrderMoyasar = async (req, res) => {
       userId,
       items,
       address,
-      amount,
+      amount: amountValue,
       paymentMethod: "moyasar",
       payment: false,
       date: Date.now(),
@@ -66,40 +76,38 @@ const placeOrderMoyasar = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Prepare payment data for Moyasar
+    // Prepare payment data
     const paymentData = {
-      amount: amount * 100, // Convert to halalas
+      amount: Math.round(amountValue * 100), // Ensure integer halalas
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
-      callback_url: `${origin}/verify`, // Frontend verification route
+      callback_url: `${origin}/verify`,
       cancel_url: `${origin}/cart`,
       metadata: {
         orderId: newOrder._id.toString(),
         userId: userId,
       },
       source: {
-        type: "creditcard", // User will enter details on Moyasar's page
+        type: "creditcard",
       },
     };
 
-    // Create Moyasar payment
+    // Send request to Moyasar
     const moyasarResponse = await axios.post(
       "https://api.moyasar.com/v1/payments",
       paymentData,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ":").toString("base64")}`,
+          Authorization: `Basic ${Buffer.from(`${process.env.MOYASAR_SECRET_KEY}:`).toString("base64")}`,
         },
       }
     );
 
-    // Redirect user to Moyasar's payment page
-    const paymentUrl = moyasarResponse.data.source.transaction_url;
-    res.json({ success: true, payment_url: paymentUrl });
+    res.json({ success: true, payment_url: moyasarResponse.data.source.transaction_url });
 
   } catch (error) {
-    console.error("Error in placeOrderMoyasar:", error);
+    console.error("Error in placeOrderMoyasar:", error.response?.data || error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
