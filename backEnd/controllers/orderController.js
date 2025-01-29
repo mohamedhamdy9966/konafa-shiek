@@ -15,7 +15,7 @@ const updateStatusSchema = Joi.object({
 // global variables
 const currency = "SAR";
 const deliveryCharge = 1;
-const frontendUrl = process.env.FRONTEND_URL;
+
 
 // moyasar initialize
 const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
@@ -83,7 +83,7 @@ const placeOrderMoyasar = async (req, res) => {
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
       callback_url: `https://konafa-shiek-ui.onrender.com/verify`,
-      cancel_url: `${frontendUrl}/cart`,
+      cancel_url: `${origin}/cart`,
       metadata: {
         orderId: newOrder._id.toString(),
         userId: userId,
