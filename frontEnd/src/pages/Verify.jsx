@@ -12,35 +12,29 @@ const Verify = () => {
 
   const verifyPayment = async () => {
     try {
+      if (!token) {
+        return null;
+      }
       const response = await axios.post(
-        `${backendUrl}/api/order/verifyMoyasarWebhook`,
-        { orderId },
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
+        backendUrl + '/api/order/verifyMoyasarWebhook',
+        { orderId, success, userId: localStorage.getItem("userId") },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (response.data.success) {
-        toast.success("Payment verified successfully!");
         setCartItems({});
         navigate('/orders');
       } else {
-        toast.error("Payment verification failed");
         navigate('/cart');
       }
     } catch (error) {
-      console.error("Verification error:", error.response?.data || error);
-      toast.error(error.response?.data?.message || "Payment verification error");
-      navigate('/cart');
+      console.log(error);
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
-    if (orderId) verifyPayment();
-  }, [orderId]);
+    verifyPayment();
+  }, [token]);
 
   return (
     <div>

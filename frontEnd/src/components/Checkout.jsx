@@ -1,14 +1,14 @@
 import MoyasarPayment from "./MoyasarPayment";
 
 const Checkout = ({ cartTotal, orderId }) => {
-  const callbackUrl = `${window.location.origin}/verify`;
+  const callbackUrl = `${import.meta.env.VITE_BACKEND_URL}/api/moyasar/callback`;
 
   return (
-    <div className="w-full p-4">
-      <h2 className="text-xl mb-4">Complete Payment</h2>
+    <div>
+      <h1>Checkout</h1>
       <MoyasarPayment
         amount={cartTotal}
-        description={orderId ? `Order #${orderId}` : "New Order"}
+        description={`Order #${orderId}`}
         callbackUrl={callbackUrl}
       />
     </div>

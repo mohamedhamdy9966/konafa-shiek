@@ -48,14 +48,11 @@ const placeOrderMoyasar = async (req, res) => {
     const { origin } = req.headers;
 
     // Validate required fields
-    if (!userId || !amount || !items || !address) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required order fields"
-      });
+    if (!userId || !amount || !items || !address || !origin) {
+      console.error("Missing required fields");
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    // Create order record
     const orderData = {
       userId,
       items,
@@ -66,60 +63,67 @@ const placeOrderMoyasar = async (req, res) => {
       date: Date.now(),
     };
 
-    const newOrder = await orderModel.create(orderData);
+    console.log("Order Data:", orderData); // Log the order data
 
-    // Create proper payment request
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+    console.log("Order saved successfully:", newOrder); // Log the saved order
+
+    // Prepare the payment request for Moyasar
     const paymentData = {
-      amount: amount * 100,
+      amount: amount * 100, // Convert to smallest currency unit (e.g., cents)
       currency: "SAR",
-      description: `Order #${newOrder._id}`,
-      callback_url: `${origin}/verify?orderId=${newOrder._id}`,
+      description: `Order ID: ${newOrder._id}`,
+      callback_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
+      cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
       metadata: {
-        orderId: newOrder._id.toString(),
-        userId: userId.toString(),
+        orderId: newOrder._id,
+        userId: userId,
+      },
+      source: {
+        type: "creditcard",
+        name: "Test User", // Cardholder name
+        number: "4111111111111111", // Test card number
+        cvc: "123", // Test CVC
+        month: "12", // Expiration month
+        year: "2025", // Expiration year
       },
     };
 
-    // Use correct Moyasar initialization
-    const payment = await axios.post(
-      'https://api.moyasar.com/v1/payment_requests',
+    console.log("Payment Data:", paymentData); // Log the payment data
+
+    // Make a POST request to Moyasar's payment API
+    const moyasarResponse = await axios.post(
+      "https://api.moyasar.com/v1/payments",
       paymentData,
       {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ':').toString('base64')}`
-        }
+          "Content-Type": "application/json",
+          Authorization: `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ":").toString("base64")}`,
+        },
       }
     );
 
-    res.json({
-      success: true,
-      payment_url: payment.data.url
-    });
+    console.log("Moyasar Payment Response:", moyasarResponse.data);
 
+    // Redirect the user to the payment URL
+    const paymentUrl = moyasarResponse.data.source.transaction_url;
+    res.json({ success: true, payment_url: paymentUrl });
   } catch (error) {
-    console.error("Payment error:", error.response?.data || error);
-    res.status(500).json({
-      success: false,
-      message: error.response?.data?.message || "Payment processing failed",
-      error: error.response?.data || error.message
-    });
+    console.error("Error in placeOrderMoyasar:", error); // Log the full error
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
 const verifyMoyasarWebhook = async (req, res) => {
   try {
-    const { id } = req.body; // Payment ID from Moyasar
-    const payment = await moyasar.payment.fetch(id);
+    const { orderId, success, userId } = req.body;
 
-    if (payment.status === 'paid') {
-      await orderModel.findByIdAndUpdate(
-        payment.metadata.orderId, 
-        { payment: true }
-      );
+    if (success === "true") {
+      await orderModel.findByIdAndUpdate(orderId, { payment: true });
       res.json({ success: true });
     } else {
-      await orderModel.findByIdAndDelete(payment.metadata.orderId);
+      await orderModel.findByIdAndDelete(orderId);
       res.json({ success: false });
     }
   } catch (error) {
