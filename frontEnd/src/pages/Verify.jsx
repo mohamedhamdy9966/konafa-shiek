@@ -15,11 +15,16 @@ const Verify = () => {
       const response = await axios.post(
         `${backendUrl}/api/order/verifyMoyasarWebhook`,
         { orderId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
 
       if (response.data.success) {
-        toast.success("Payment verified!");
+        toast.success("Payment verified successfully!");
         setCartItems({});
         navigate('/orders');
       } else {
@@ -27,7 +32,8 @@ const Verify = () => {
         navigate('/cart');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Verification error");
+      console.error("Verification error:", error.response?.data || error);
+      toast.error(error.response?.data?.message || "Payment verification error");
       navigate('/cart');
     }
   };

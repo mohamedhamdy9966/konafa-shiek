@@ -47,6 +47,14 @@ const placeOrderMoyasar = async (req, res) => {
     const { userId, amount, items, address } = req.body;
     const { origin } = req.headers;
 
+    // Validate required fields
+    if (!userId || !amount || !items || !address) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order fields"
+      });
+    }
+
     // Create order record
     const orderData = {
       userId,
@@ -60,7 +68,7 @@ const placeOrderMoyasar = async (req, res) => {
 
     const newOrder = await orderModel.create(orderData);
 
-    // Create payment request with Moyasar
+    // Create proper payment request
     const paymentData = {
       amount: amount * 100,
       currency: "SAR",
@@ -68,23 +76,33 @@ const placeOrderMoyasar = async (req, res) => {
       callback_url: `${origin}/verify?orderId=${newOrder._id}`,
       metadata: {
         orderId: newOrder._id.toString(),
-        userId: userId,
+        userId: userId.toString(),
       },
     };
 
-    // Use the correct Moyasar API method
-    const payment = await moyasar.paymentRequest.create(paymentData);
-    
+    // Use correct Moyasar initialization
+    const payment = await axios.post(
+      'https://api.moyasar.com/v1/payment_requests',
+      paymentData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ':').toString('base64')}`
+        }
+      }
+    );
+
     res.json({
       success: true,
-      payment_url: payment.url
+      payment_url: payment.data.url
     });
 
   } catch (error) {
-    console.error("Payment error:", error.response?.data || error.message);
+    console.error("Payment error:", error.response?.data || error);
     res.status(500).json({
       success: false,
-      message: error.response?.data?.message || "Payment processing failed"
+      message: error.response?.data?.message || "Payment processing failed",
+      error: error.response?.data || error.message
     });
   }
 };
