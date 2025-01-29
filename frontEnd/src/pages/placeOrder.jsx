@@ -193,8 +193,8 @@ const PlaceOrder = () => {
               {" "}
               إختر فرع التسليم الأقرب إليك
             </option>
-            <option className="cursor-pointer"> فرع البساتين</option>
-            <option className="cursor-pointer"> فرع الشمال</option>
+            <option value="basateen" className="cursor-pointer"> فرع البساتين</option>
+            <option value="shamal" className="cursor-pointer"> فرع الشمال</option>
           </select>
         </div>
         <div className="flex gap-3"></div>
@@ -203,6 +203,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
+          min="0"
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="number"
           placeholder="رقم الجوال"
@@ -242,21 +243,26 @@ const PlaceOrder = () => {
               <p className="text-gray-500 text-sm font-medium mx-4">
                 الدفع بالبطاقة
               </p>
+              {method === "moyasar" && (
+                <Checkout
+                  cartTotal={getCartAmount() + delivery_fee}
+                  orderId={""}
+                  onPaymentSuccess={() => {
+                    setCartItems({});
+                    navigate("/orders");
+                  }}
+                />
+              )}
             </div>
           </div>
-          {method === "moyasar" ? (
-            <Checkout cartTotal={getCartAmount() + delivery_fee} orderId={""} />
-          ) : (
-            // Existing form inputs and submit button
-            <div className="w-full text-end mt-8">
-              <button
-                type="submit"
-                className="bg-black text-white px-16 py-3 text-sm rounded-sm"
-              >
-                <h2> تأكيد الطلب</h2>
-              </button>
-            </div>
-          )}
+          <div className="w-full text-end mt-8">
+            <button
+              type="submit"
+              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
+            >
+              <h2> confirm order </h2>
+            </button>
+          </div>
         </div>
       </div>
     </form>
