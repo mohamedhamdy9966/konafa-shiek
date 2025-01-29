@@ -9,6 +9,7 @@ import {
   allOrders,
   updateStatus,
   verifyMoyasarWebhook,
+  verifyMoyasarPayment,
 } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
