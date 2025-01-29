@@ -48,7 +48,7 @@ const Orders = () => {
   return (
     <div className="border-t pt-16">
       <div className="text-2xl">
-        <Title text1={"My"} text2={"Orders"} />
+        <Title text1={"طلباتي"} text2={"السابقة"} />
       </div>
       <div>
         {orderData.map((item, index) => (
@@ -72,12 +72,12 @@ const Orders = () => {
                     {currency}
                     {item.price}
                   </p>
-                  <p>Quantity : {item.quantity}</p>
-                  <p>Size : {item.size}</p>
+                  <p>العدد : {item.quantity}</p>
+                  <p>الحجم : {item.size}</p>
                 </div>
                 {item.sauceSize > 0 && (
                   <p className="mt-1">
-                    Sauce Size:{" "}
+                    حجم الصوص:{" "}
                     {item.sauceSize === 4
                       ? "XS"
                       : item.sauceSize === 5
@@ -89,17 +89,17 @@ const Orders = () => {
                 )}
                 {item.selectedSauce && item.selectedSauce.length > 0 && (
                   <p className="mt-1">
-                    Sauce Type: {item.selectedSauce.join(", ")}
+                    نوع الصوص: {item.selectedSauce.join(", ")}
                   </p>
                 )}
                 <p className="mt-1">
-                  Date:{" "}
+                  التاريخ:{" "}
                   <span className="text-gray-400">
                     {new Date(item.date).toDateString()}
                   </span>
                 </p>
                 <p className="mt-1">
-                  Payment:{" "}
+                  طريقة الدفع:{" "}
                   <span className="text-gray-400">{item.paymentMethod}</span>
                 </p>
               </div>
@@ -113,7 +113,7 @@ const Orders = () => {
                 onClick={loadOrderData}
                 className="border px-4 py-4 text-sm font-medium rounded-sm"
               >
-                Track Order
+                حالة الطلب
               </button>
             </div>
           </div>
