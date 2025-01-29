@@ -21,9 +21,9 @@ const ShopContextProvider = (props) => {
       toast.error("Please Select Size");
       return null;
     }
-  
+
     let cartData = structuredClone(cartItems);
-  
+
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
         cartData[itemId][size] = {
@@ -47,9 +47,9 @@ const ShopContextProvider = (props) => {
         selectedSauce: Array.isArray(selectedSauce) ? selectedSauce : [],
       };
     }
-  
+
     setCartItems(cartData);
-  
+
     if (token) {
       try {
         const userId = localStorage.getItem("userId");
@@ -193,6 +193,13 @@ const ShopContextProvider = (props) => {
     if (!token && localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"));
       getUserCart(localStorage.getItem("token"));
+    }
+  }, [token]);
+
+  // to fetch cart on token change
+  useEffect(() => {
+    if (token) {
+      getUserCart(token);
     }
   }, [token]);
 
