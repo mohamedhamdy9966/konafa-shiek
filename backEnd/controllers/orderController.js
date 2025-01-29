@@ -62,7 +62,7 @@ const placeOrderMoyasar = async (req, res) => {
 
     // Create payment request with Moyasar
     const paymentResponse = await axios.post(
-      "https://api.moyasar.com/v1/payment_requests",
+      "https://api.moyasar.com/v1/payment-requests",
       {
         amount: amount * 100,
         currency: "SAR",

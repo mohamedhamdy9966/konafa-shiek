@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import CartTotal from "../components/CartTotal";
 import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
+  const [paymentReady, setPaymentReady] = useState(false);
+  const [moyasarConfig, setMoyasarConfig] = useState(null);
   const {
     navigate,
     backendUrl,
@@ -111,14 +113,17 @@ const PlaceOrder = () => {
         case "moyasar": {
           const response = await axios.post(
             backendUrl + "/api/order/moyasar",
-            orderData, // Removed payment_token
+            orderData,
             { headers: { Authorization: `Bearer ${token}` } }
           );
 
           if (response.data.success) {
-            navigate(
-              `/checkout?orderId=${response.data.orderId}&amount=${orderData.amount}`
-            );
+            setMoyasarConfig({
+              orderId: response.data.orderId,
+              amount: orderData.amount,
+              callbackUrl: `${window.location.origin}/verify`,
+            });
+            setPaymentReady(true);
           }
           break;
         }
@@ -126,10 +131,43 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.error("Error in onSubmitHandler:", error); // Log the full error
+      console.error("Error in onSubmitHandler:", error);
       toast.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (!paymentReady || !moyasarConfig) return;
+
+    const initializeMoyasar = () => {
+      if (window.Moyasar) {
+        window.Moyasar.init({
+          element: ".mysr-form",
+          amount: moyasarConfig.amount * 100,
+          currency: "SAR",
+          description: `Order #${moyasarConfig.orderId}`,
+          publishable_api_key:
+            "pk_test_AQpxBV31a29qhkhUYFYUFjhwllaDVrxSq5ydVNui",
+          callback_url: moyasarConfig.callbackUrl,
+          methods: ["creditcard"],
+        });
+      }
+    };
+
+    if (
+      !document.querySelector(
+        'script[src="https://cdn.moyasar.com/moyasar.js"]'
+      )
+    ) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.moyasar.com/moyasar.js";
+      script.async = true;
+      script.onload = initializeMoyasar;
+      document.head.appendChild(script);
+    } else {
+      initializeMoyasar();
+    }
+  }, [paymentReady, moyasarConfig]);
 
   return (
     <form
@@ -243,14 +281,26 @@ const PlaceOrder = () => {
               </p>
             </div>
           </div>
-          <div className="w-full text-end mt-8">
-            <button
-              type="submit"
-              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
-            >
-              <h2> checkout </h2>
-            </button>
-          </div>
+          {/* Moyasar payment form */}
+          {paymentReady && (
+            <div className="mt-4">
+              <div className="mysr-form"></div>
+              <p className="text-sm text-gray-500 mt-2">
+                سيتم تحويلك إلى صفحة الدفع الآمنة من مویاسر لإتمام عملية الدفع
+              </p>
+            </div>
+          )}
+          {/* Checkout button */}
+          {!paymentReady && (
+            <div className="w-full text-end mt-8">
+              <button
+                type="submit"
+                className="bg-black text-white px-16 py-3 text-sm rounded-sm"
+              >
+                <h2> checkout </h2>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </form>
