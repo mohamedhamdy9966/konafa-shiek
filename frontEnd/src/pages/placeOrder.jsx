@@ -188,8 +188,8 @@ const PlaceOrder = () => {
               {" "}
               إختر فرع التسليم الأقرب إليك
             </option>
-            <option className="cursor-pointer"> حي البساتين</option>
-            <option className="cursor-pointer"> حي الشمال</option>
+            <option className="cursor-pointer"> فرع البساتين</option>
+            <option className="cursor-pointer"> فرع الشمال</option>
           </select>
         </div>
         <div className="flex gap-3"></div>
@@ -237,7 +237,7 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                الدفع بالفيزا
+                الدفع بالبطاقة
               </p>
             </div>
           </div>

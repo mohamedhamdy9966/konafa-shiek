@@ -17,7 +17,7 @@ const Contact = () => {
         />
 
         <div className="flex flex-col justify-center items-start gap-6">
-          <p className="font-semibold text-xl text-gray-600">Our Store</p>
+          <p className="font-semibold text-xl text-gray-600">أماكن تواجدنا</p>
 
           <address className="not-italic text-gray-500">
             فرع البساتين <br />

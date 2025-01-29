@@ -12,10 +12,10 @@ const NewsLetterBox = () => {
   return (
     <div className="text-center px-4">
       <p className="text-2xl font-medium text-gray-800">
-        Subscribe now & get 10% off
+        اشترك معنا في نشرة أخبار كنافة شيك
       </p>
       <p className="text-gray-400 mt-3">
-        Stay updated with our latest deals and offers.
+        ابقَ على اطلاع بأحدث العروض والتخفيضات لدينا.
       </p>
 
       <form
@@ -24,7 +24,7 @@ const NewsLetterBox = () => {
         className="w-full sm:w-1/2 flex flex-col sm:flex-row items-center gap-3 mx-auto my-6 border pl-3 py-2"
       >
         <label htmlFor="email" className="sr-only">
-          Email Address
+          عنوان بريدك الإلكتروني
         </label>
         <input
           id="email"
@@ -37,7 +37,7 @@ const NewsLetterBox = () => {
           type="submit"
           className="bg-black text-white text-xs px-6 py-3 w-full sm:w-auto"
         >
-          Subscribe
+          إشترك مجانا
         </button>
       </form>
 
