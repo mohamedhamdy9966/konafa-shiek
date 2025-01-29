@@ -7,7 +7,7 @@ const About = () => {
     <div>
       {/* About Us Section */}
       <div className="text-2xl text-center pt-8 border-t">
-        <Title text1="About" text2="Us" />
+        <Title text1="عن" text2="كنافة شيك" />
       </div>
 
       <div className="my-10 flex flex-col md:flex-row gap-16">
@@ -19,50 +19,49 @@ const About = () => {
 
         <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
           <p>
-            We are a dedicated team committed to providing the best services and
-            products. Our journey began with a vision to make a difference in
-            the industry, and we continue to strive for excellence every day.
+            نحن فريق مخلص ملتزم بتقديم أفضل الخدمات والمنتجات. بدأت رحلتنا برؤية
+            لإحداث فرق في مجال صناعة الحلويات الشرقية خاصة الكنافة , ونواصل
+            السعي لتحقيق التميز كل يوم.
           </p>
           <p>
-            Our core values include customer satisfaction, innovation, and
-            integrity. We believe in creating lasting relationships with our
-            clients and delivering unparalleled quality.
+            تشمل قيمنا الأساسية رضا العملاء والابتكار والنزاهة. نحن نؤمن ببناء
+            علاقات دائمة مع عملائنا وتقديم جودة لا مثيل لها.
           </p>
           <b className="text-gray-800">
-            Join us as we continue to grow and innovate.
+            انضم إلينا بينما نواصل النمو والابتكار و خدمة عملائنا بأفضل كنافة
+            شرقية في المملكةز
           </b>
           <p>
-            Whether you are looking for top-notch products or reliable services,
-            we have you covered. Our team is here to support you at every step.
+            سواء كنت تبحث عن منتجات عالية الجودة أو خدمات موثوقة، فنحن هنا
+            لتلبية احتياجاتك. فريقنا مستعد لدعمك في كل خطوة.
           </p>
         </div>
       </div>
 
       {/* Why Choose Us Section */}
       <div>
-        <Title text1="Why" text2="Choose Us" />
+        <Title text1="لماذا" text2="تختار كنافة شيك" />
       </div>
 
       <div className="flex flex-col md:flex-row text-sm mb-20 gap-6 md:gap-0">
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Quality Products</b>
+          <b>أجود كنافة </b>
           <p className="text-gray-600">
-            We offer high-quality products sourced from the best suppliers to
-            ensure you get value for your money.
+            نحن نقدم منتجات عالية الجودة يتم الحصول عليها من أفضل الموردين لضمان
+            حصولك على قيمة مقابل أموالك.
           </p>
         </div>
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Exceptional Service</b>
+          <b>أفضل خدمة</b>
           <p className="text-gray-600">
-            Our customer service team is always ready to assist you and ensure a
-            smooth shopping experience.
+            فريق خدمة العملاء لدينا جاهز دائمًا لمساعدتك وضمان تجربة كنافة شرقية
+            لن تنسى.
           </p>
         </div>
         <div className="border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Trusted by Many</b>
+          <b>الكل يثق في كنافة شيك</b>
           <p className="text-gray-600">
-            Thousands of customers trust us for our reliability and dedication
-            to excellence.
+            آلاف العملاء يثقون بنا بسبب موثوقيتنا والتزامنا بالتميز.
           </p>
         </div>
       </div>

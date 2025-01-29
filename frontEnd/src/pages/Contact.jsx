@@ -6,7 +6,7 @@ const Contact = () => {
   return (
     <div>
       <div className="text-center text-2xl pt-10 border-t">
-        <Title text1="Contact" text2="Us" />
+        <Title text1="تواصل" text2="معنا" />
       </div>
 
       <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
@@ -20,18 +20,19 @@ const Contact = () => {
           <p className="font-semibold text-xl text-gray-600">Our Store</p>
 
           <address className="not-italic text-gray-500">
-            123 Main Street, Suite 456 <br />
-            Springfield, Anywhere <br />
-            (123) 456-7890
+            فرع البساتين <br />
+            فرع الشمال , محمد بن سيرين <br />
+            0550681549
+            0558658516
           </address>
 
-          <p className="font-semibold text-xl text-gray-600">Careers</p>
+          <p className="font-semibold text-xl text-gray-600">الوظائف</p>
 
           <button
             className="border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500"
             aria-label="Learn more about working with us"
           >
-            Work With Us
+            إنضم لطاقم عملنا
           </button>
         </div>
       </div>
