@@ -23,6 +23,7 @@ orderRouter.post("/moyasar", authUser, placeOrderMoyasar); // Moyasar payment
 orderRouter.post("/paytabs", authUser, placeOrderPaytabs); // Moyasar payment
 
 // verify pay
+orderRouter.post("/verifyMoyasarPayment", verifyMoyasarPayment);
 orderRouter.post("/verifyMoyasarWebhook", verifyMoyasarWebhook);
 
 // User Routes

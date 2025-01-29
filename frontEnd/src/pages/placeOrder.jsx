@@ -4,7 +4,6 @@ import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import MoyasarPayment from "../components/MoyasarPayment";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -109,7 +108,20 @@ const PlaceOrder = () => {
           }
           break;
         }
-        // Moyasar case is now handled by the MoyasarPayment component
+        // Inside onSubmitHandler's switch case for 'moyasar'
+        case "moyasar": {
+          const responseMoyasar = await axios.post(
+            backendUrl + "/api/order/moyasar",
+            orderData,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (responseMoyasar.data.success) {
+            window.location.href = responseMoyasar.data.payment_url;
+          } else {
+            toast.error(responseMoyasar.data.message);
+          }
+          break;
+        }
         default:
           break;
       }
@@ -231,30 +243,14 @@ const PlaceOrder = () => {
               </p>
             </div>
           </div>
-
-          {/* Add the payment form section here */}
-          {method === "moyasar" && (
-            <MoyasarPayment
-              amount={getCartAmount() + delivery_fee}
-              description={`Order from ${formData.firstName} ${formData.lastName}`}
-              callbackUrl={`${window.location.origin}/verify`}
-              onPaymentSuccess={() => {
-                setCartItems({});
-                navigate("/orders");
-              }}
-            />
-          )}
-
-          {method !== "moyasar" && (
-            <div className="w-full text-end mt-8">
-              <button
-                type="submit"
-                className="bg-black text-white px-16 py-3 text-sm rounded-sm"
-              >
-                <h2> تأكيد الطلب</h2>
-              </button>
-            </div>
-          )}
+          <div className="w-full text-end mt-8">
+            <button
+              type="submit"
+              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
+            >
+              <h2> تأكيد الطلب</h2>
+            </button>
+          </div>
         </div>
       </div>
     </form>

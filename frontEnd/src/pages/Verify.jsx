@@ -5,21 +5,18 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Verify = () => {
+  const [searchParams] = useSearchParams();
+  const paymentId = searchParams.get('id');
   const { navigate, token, setCartItems, backendUrl } = useContext(ShopContext);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const success = searchParams.get('success');
-  const orderId = searchParams.get('orderId');
 
   const verifyPayment = async () => {
     try {
-      if (!token) {
-        return null;
-      }
       const response = await axios.post(
-        backendUrl + '/api/order/verifyMoyasarWebhook',
-        { orderId, success, userId: localStorage.getItem("userId") },
+        backendUrl + '/api/order/verifyMoyasarPayment',
+        { paymentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       if (response.data.success) {
         setCartItems({});
         navigate('/orders');
@@ -27,20 +24,16 @@ const Verify = () => {
         navigate('/cart');
       }
     } catch (error) {
-      console.log(error);
+      console.error("Verification error:", error);
       toast.error(error.message);
     }
   };
 
   useEffect(() => {
-    verifyPayment();
-  }, [token]);
+    if (paymentId) verifyPayment();
+  }, [paymentId]);
 
-  return (
-    <div>
-      verify
-    </div>
-  );
+  return <div>Verifying payment...</div>;
 };
 
 export default Verify;

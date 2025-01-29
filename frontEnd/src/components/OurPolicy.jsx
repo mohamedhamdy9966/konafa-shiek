@@ -12,23 +12,23 @@ const OurPolicy = () => {
   const policies = [
     {
       image: assets.exchange_icon,
-      title: "Our Policy",
+      title: "سياستنا",
       description:
         "كسر حاجز الإحراج لدى البعض وتوفير فرصة وحق الاختيار للأشياء التي .يحتاجونها",
       altText: "Exchange Policy Icon",
     },
     {
       image: assets.quality_icon,
-      title: "Premium Quality",
+      title: "جودة المنتجات",
       description:
-        "كسر حاجز الإحراج لدى البعض وتوفير فرصة وحق الاختيار للأشياء التي .يحتاجونها",
+        "نقدم لكم أفضل جودة منتجات الكنافة الشرقية المصنوعة بعناية على ذوقكم الخاص",
       altText: "Quality Policy Icon",
     },
     {
       image: assets.support_img,
-      title: "Customer Support",
+      title: "خدمة العملاء",
       description:
-        "كسر حاجز الإحراج لدى البعض وتوفير فرصة وحق الاختيار للأشياء التي .يحتاجونها",
+        "نقدم لكم خدمة عملاء مخصصة لراحتكم و شعوركم بالراحة دائما",
       altText: "Support Policy Icon",
     },
   ];
