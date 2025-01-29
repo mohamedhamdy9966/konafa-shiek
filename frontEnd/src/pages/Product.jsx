@@ -49,9 +49,16 @@ const Product = () => {
   };
 
   const handleSauceSizeClick = (size) => {
-    setSauceSize(size);
-    setIsSauceSizeSelected(true); // Set sauce size selection state to true
+    if (sauceSize === size) {
+      setSauceSize(0); // Unselect sauce size if clicked again
+      setSelectedSauce([]); // Clear selected sauces
+      setIsSauceSizeSelected(false);
+    } else {
+      setSauceSize(size);
+      setIsSauceSizeSelected(true);
+    }
   };
+  
 
   const handleSauceTypeToggle = (sauce) => {
     if (isSauceSizeSelected) {
