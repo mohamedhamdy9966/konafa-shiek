@@ -147,7 +147,7 @@ const PlaceOrder = () => {
           currency: "SAR",
           description: `Order #${moyasarConfig.orderId}`,
           publishable_api_key:
-            "pk_test_AQpxBV31a29qhkhUYFYUFjhwllaDVrxSq5ydVNui",
+            "pk_test_E4j6enesChywd2Po4Phx8UqSWp1cV87JsVXSWxnt",
           callback_url: moyasarConfig.callbackUrl,
           methods: ["creditcard"],
         });
