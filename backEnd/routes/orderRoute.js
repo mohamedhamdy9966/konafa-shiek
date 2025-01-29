@@ -9,7 +9,6 @@ import {
   allOrders,
   updateStatus,
   verifyMoyasarWebhook,
-  verifyMoyasarPayment,
 } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
@@ -24,7 +23,6 @@ orderRouter.post("/moyasar", authUser, placeOrderMoyasar); // Moyasar payment
 orderRouter.post("/paytabs", authUser, placeOrderPaytabs); // Moyasar payment
 
 // verify pay
-orderRouter.post("/verifyMoyasarPayment", verifyMoyasarPayment);
 orderRouter.post("/verifyMoyasarWebhook", verifyMoyasarWebhook);
 
 // User Routes
