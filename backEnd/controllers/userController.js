@@ -29,8 +29,8 @@ const loginUser = async (req, res) => {
 
     if (!user) {
       return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -61,12 +61,10 @@ const registerUser = async (req, res) => {
 
     // Validate input
     if (!validator.isEmail(email)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid email, Please Enter valid Email !",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email, Please Enter valid Email !",
+      });
     }
 
     if (password.length < 8) {
