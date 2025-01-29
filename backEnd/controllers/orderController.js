@@ -47,12 +47,7 @@ const placeOrderMoyasar = async (req, res) => {
     const { userId, amount, items, address } = req.body;
     const { origin } = req.headers;
 
-    // Validate required fields
-    if (!userId || !amount || !items || !address || !origin) {
-      console.error("Missing required fields");
-      return res.status(400).json({ success: false, message: "Missing required fields" });
-    }
-
+    // Create order record
     const orderData = {
       userId,
       items,
@@ -63,67 +58,46 @@ const placeOrderMoyasar = async (req, res) => {
       date: Date.now(),
     };
 
-    console.log("Order Data:", orderData); // Log the order data
-
     const newOrder = new orderModel(orderData);
     await newOrder.save();
-    console.log("Order saved successfully:", newOrder); // Log the saved order
 
-    // Prepare the payment request for Moyasar
+    // Prepare payment data
     const paymentData = {
-      amount: amount * 100, // Convert to smallest currency unit (e.g., cents)
+      amount: amount * 100,
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
-      callback_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
-      cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
+      callback_url: `${origin}/verify?orderId=${newOrder._id}`,
       metadata: {
-        orderId: newOrder._id,
+        orderId: newOrder._id.toString(),
         userId: userId,
-      },
-      source: {
-        type: "creditcard",
-        name: "Test User", // Cardholder name
-        number: "4111111111111111", // Test card number
-        cvc: "123", // Test CVC
-        month: "12", // Expiration month
-        year: "2025", // Expiration year
       },
     };
 
-    console.log("Payment Data:", paymentData); // Log the payment data
-
-    // Make a POST request to Moyasar's payment API
-    const moyasarResponse = await axios.post(
-      "https://api.moyasar.com/v1/payments",
-      paymentData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${Buffer.from(process.env.MOYASAR_SECRET_KEY + ":").toString("base64")}`,
-        },
-      }
-    );
-
-    console.log("Moyasar Payment Response:", moyasarResponse.data);
-
-    // Redirect the user to the payment URL
-    const paymentUrl = moyasarResponse.data.source.transaction_url;
-    res.json({ success: true, payment_url: paymentUrl });
+    // Generate payment URL
+    const payment = await moyasar.paymentRequest.create(paymentData);
+    res.json({ 
+      success: true, 
+      payment_url: payment.url 
+    });
   } catch (error) {
-    console.error("Error in placeOrderMoyasar:", error); // Log the full error
+    console.error("Error in placeOrderMoyasar:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 const verifyMoyasarWebhook = async (req, res) => {
   try {
-    const { orderId, success, userId } = req.body;
+    const { id } = req.body; // Payment ID from Moyasar
+    const payment = await moyasar.payment.fetch(id);
 
-    if (success === "true") {
-      await orderModel.findByIdAndUpdate(orderId, { payment: true });
+    if (payment.status === 'paid') {
+      await orderModel.findByIdAndUpdate(
+        payment.metadata.orderId, 
+        { payment: true }
+      );
       res.json({ success: true });
     } else {
-      await orderModel.findByIdAndDelete(orderId);
+      await orderModel.findByIdAndDelete(payment.metadata.orderId);
       res.json({ success: false });
     }
   } catch (error) {
