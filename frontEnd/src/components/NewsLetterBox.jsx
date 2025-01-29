@@ -37,7 +37,7 @@ const NewsLetterBox = () => {
           type="submit"
           className="bg-black text-white text-xs px-6 py-3 w-full sm:w-auto"
         >
-          إشترك مجانا
+          Subscribe
         </button>
       </form>
 
