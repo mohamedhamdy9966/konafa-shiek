@@ -229,9 +229,9 @@ const Product = () => {
           </button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-500 mt-5 space-y-1">
-            <p>100% Customer Satisfaction Guarantee</p>
-            <p>Free shipping on orders over £50</p>
-            <p>30-day return policy</p>
+            <p>100% ضمان خدمة الجودة</p>
+            <p>سيتوفر قريبا خدمة التوصيل</p>
+            <p>متوفر الدفع عن طريق فيزا او ماستر كارد او مدى</p>
           </div>
         </div>
       </div>
@@ -240,9 +240,9 @@ const Product = () => {
       <div className="mt-20">
         <div className="flex">
           <button className="border px-5 py-3 text-sm font-bold">
-            Description
+            الوصف
           </button>
-          <button className="border px-5 py-3 text-sm">Reviews (122)</button>
+          <button className="border px-5 py-3 text-sm">اراء العملاء (122)</button>
         </div>
         <div className="border px-6 py-6 text-sm text-gray-500 space-y-4">
           <p>

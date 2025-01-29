@@ -74,6 +74,7 @@ const Login = ({ setToken }) => {
     localStorage.setItem("token", token);
     if (userId) localStorage.setItem("userId", userId);
     navigate(redirectPath);
+    window.location.reload();
   };
 
   const onSubmitHandler = async (event) => {
