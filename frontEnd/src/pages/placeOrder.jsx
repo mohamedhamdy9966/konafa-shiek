@@ -42,13 +42,15 @@ const PlaceOrder = () => {
         toast.error("Your cart is empty");
         return;
       }
-  
+
       let orderItems = [];
       for (const productId in cartItems) {
         for (const size in cartItems[productId]) {
           const item = cartItems[productId][size];
           if (item.quantity > 0) {
-            const productInfo = products.find((product) => product._id === productId);
+            const productInfo = products.find(
+              (product) => product._id === productId
+            );
             if (productInfo) {
               const sizeInfo = productInfo.sizes[size];
               if (sizeInfo) {
@@ -64,21 +66,23 @@ const PlaceOrder = () => {
                 };
                 orderItems.push(orderItem);
               } else {
-                console.warn(`Size ${size} not found for product ${productInfo.name}`);
+                console.warn(
+                  `Size ${size} not found for product ${productInfo.name}`
+                );
               }
             }
           }
         }
       }
-  
+
       console.log("Order Items:", orderItems);
-  
+
       const userId = localStorage.getItem("userId") || token?.userId || "";
       if (!userId) {
         toast.error("User ID is missing. Please log in.");
         return;
       }
-  
+
       let orderData = {
         userId,
         address: formData,
@@ -86,9 +90,9 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
         paymentMethod: method,
       };
-  
+
       console.log("Order Data:", orderData);
-  
+
       switch (method) {
         case "COD": {
           const response = await axios.post(
@@ -104,17 +108,17 @@ const PlaceOrder = () => {
           }
           break;
         }
-        case 'moyasar': {
-          const responseMoyasar = await axios.post(
-            backendUrl + '/api/order/moyasar',
-            orderData,
+        case "moyasar": {
+          const response = await axios.post(
+            backendUrl + "/api/order/moyasar",
+            orderData, // Removed payment_token
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          if (responseMoyasar.data.success) {
-            const { payment_url } = responseMoyasar.data;
-            window.location.replace(payment_url); // Redirect the user to the payment URL
-          } else {
-            toast.error(responseMoyasar.data.message);
+
+          if (response.data.success) {
+            navigate(
+              `/checkout?orderId=${response.data.orderId}&amount=${orderData.amount}`
+            );
           }
           break;
         }
@@ -126,7 +130,7 @@ const PlaceOrder = () => {
       toast.error(error.message);
     }
   };
-  
+
   return (
     <form
       autoComplete="true"
@@ -211,9 +215,7 @@ const PlaceOrder = () => {
         <div className="mt-12">
           <Title text1={"Payment"} text2={"Method"} />
           {/* Payment Method Selection */}
-          <div
-            className="flex gap-3 flex-col lg:flex-row"
-          >
+          <div className="flex gap-3 flex-col lg:flex-row">
             <div
               onClick={() => setMethod("COD")}
               className="flex items-center gap-3 border p-2 px-3 cursor-pointer"

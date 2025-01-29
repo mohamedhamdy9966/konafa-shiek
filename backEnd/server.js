@@ -16,13 +16,22 @@ connectCloudinary();
 
 // middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://konafa-shiek-ui.onrender.com", "http://localhost:3000", "https://kunafasheek.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+app.options("*", cors());
 
 // api endpoints
-app.use("/api/user",userRouter);
-app.use("/api/product",productRouter);
-app.use("/api/cart",cartRouter);
-app.use('/api/order',orderRouter);
+app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING");
