@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import CartTotal from "../components/CartTotal";
 import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
+import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -381,7 +382,7 @@ const PlaceOrder = () => {
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
                   <img
-                    src="../assets/moyasar-cards.png"
+                    src={assets.moyasar_cards}
                     className="w-auto h-auto"
                     alt="cards"
                   />

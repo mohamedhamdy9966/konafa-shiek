@@ -1,4 +1,5 @@
-import upload_area from "./upload_area.png"
+import upload_area from "./upload_area.png";
+import moyasar_cards from "./moyasar-cards.png"
 import logo from "./konafa_shiek_logo.png";
 import cart_icon from "./cart_icon.png";
 import bin_icon from "./bin_icon.png";
@@ -22,6 +23,7 @@ import order_icon from './order_icon.png'
 
 export const assets = {
   add_icon,
+  moyasar_cards,
   order_icon,
   upload_area,
   logo,

@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import { ShopContext } from "../context/ShopContext";
@@ -30,11 +32,31 @@ const Product = () => {
         setSelectedSauce([]);
         setIsSauceSizeSelected(false);
       }
-      setTimeout(() => setLoading(false), 1500); // Simulating a delay
+      setTimeout(() => setLoading(false), 1500);
     };
 
     fetchProductData();
   }, [productId, products]);
+
+  const handleAddToCart = () => {
+    addToCart(productData._id, size, sauceSize, selectedSauce);
+    
+    // Create toast message with product details
+    const sauceSizeText = sauceSize ? ` with ${sauceSize} sauce` : '';
+    const selectedSauceText = selectedSauce.length > 0 ? ` (${selectedSauce.join(', ')})` : '';
+    
+    toast.success(
+      `Added ${productData.name} - Size ${size}${sauceSizeText}${selectedSauceText} to cart!`,
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      }
+    );
+  };
 
   if (loading) {
     return (
@@ -46,10 +68,10 @@ const Product = () => {
 
   const handleSizeClick = (key) => {
     if (size === key) {
-      setSize(""); // Reset size if the same size is clicked again
-      setSauceSize(0); // Reset sauce size
-      setSelectedSauce([]); // Reset selected sauce
-      setIsSauceSizeSelected(false); // Reset sauce size selection state
+      setSize("");
+      setSauceSize(0);
+      setSelectedSauce([]);
+      setIsSauceSizeSelected(false);
     } else {
       setSize(key);
     }
@@ -57,8 +79,8 @@ const Product = () => {
 
   const handleSauceSizeClick = (size) => {
     if (sauceSize === size) {
-      setSauceSize(0); // Unselect sauce size if clicked again
-      setSelectedSauce([]); // Clear selected sauces
+      setSauceSize(0);
+      setSelectedSauce([]);
       setIsSauceSizeSelected(false);
     } else {
       setSauceSize(size);
@@ -82,6 +104,7 @@ const Product = () => {
 
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
+      <ToastContainer />
       <div className="flex gap-12 flex-col sm:flex-row">
         {/* Product Images */}
         <div className="flex-1 flex flex-col-reverse sm:flex-row gap-3">
@@ -225,9 +248,7 @@ const Product = () => {
             </div>
           </div>
           <button
-            onClick={() =>
-              addToCart(productData._id, size, sauceSize, selectedSauce)
-            }
+            onClick={handleAddToCart}
             disabled={!size}
             className="mt-5 bg-black text-white px-8 py-3 text-sm active:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
