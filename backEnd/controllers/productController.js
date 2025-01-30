@@ -165,4 +165,4 @@ const singleProduct = async (req, res) => {
   }
 };
 
-export { listProducts, singleProduct, removeProduct, addProduct };
+export { listProducts, singleProduct, removeProduct, addProduct, updateProduct };
