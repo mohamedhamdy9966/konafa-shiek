@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import CartTotal from "../components/CartTotal";
 import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
-  const [paymentReady, setPaymentReady] = useState(false);
-  const [moyasarConfig, setMoyasarConfig] = useState(null);
   const {
     navigate,
     backendUrl,
@@ -44,15 +42,13 @@ const PlaceOrder = () => {
         toast.error("Your cart is empty");
         return;
       }
-
+  
       let orderItems = [];
       for (const productId in cartItems) {
         for (const size in cartItems[productId]) {
           const item = cartItems[productId][size];
           if (item.quantity > 0) {
-            const productInfo = products.find(
-              (product) => product._id === productId
-            );
+            const productInfo = products.find((product) => product._id === productId);
             if (productInfo) {
               const sizeInfo = productInfo.sizes[size];
               if (sizeInfo) {
@@ -68,23 +64,21 @@ const PlaceOrder = () => {
                 };
                 orderItems.push(orderItem);
               } else {
-                console.warn(
-                  `Size ${size} not found for product ${productInfo.name}`
-                );
+                console.warn(`Size ${size} not found for product ${productInfo.name}`);
               }
             }
           }
         }
       }
-
+  
       console.log("Order Items:", orderItems);
-
+  
       const userId = localStorage.getItem("userId") || token?.userId || "";
       if (!userId) {
         toast.error("User ID is missing. Please log in.");
         return;
       }
-
+  
       let orderData = {
         userId,
         address: formData,
@@ -92,9 +86,9 @@ const PlaceOrder = () => {
         amount: getCartAmount() + delivery_fee,
         paymentMethod: method,
       };
-
+  
       console.log("Order Data:", orderData);
-
+  
       switch (method) {
         case "COD": {
           const response = await axios.post(
@@ -110,20 +104,17 @@ const PlaceOrder = () => {
           }
           break;
         }
-        case "moyasar": {
-          const response = await axios.post(
-            backendUrl + "/api/order/moyasar",
+        case 'moyasar': {
+          const responseMoyasar = await axios.post(
+            backendUrl + '/api/order/moyasar',
             orderData,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-
-          if (response.data.success) {
-            setMoyasarConfig({
-              orderId: response.data.orderId,
-              amount: orderData.amount,
-              callbackUrl: `${window.location.origin}/verify`,
-            });
-            setPaymentReady(true);
+          if (responseMoyasar.data.success) {
+            const { payment_url } = responseMoyasar.data;
+            window.location.replace(payment_url); // Redirect the user to the payment URL
+          } else {
+            toast.error(responseMoyasar.data.message);
           }
           break;
         }
@@ -131,32 +122,11 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.error("Error in onSubmitHandler:", error);
+      console.error("Error in onSubmitHandler:", error); // Log the full error
       toast.error(error.message);
     }
   };
-
-  useEffect(() => {
-    if (!paymentReady || !moyasarConfig) {
-      console.log("Moyasar config not ready:", { paymentReady, moyasarConfig });
-      return;
-    }
-
-    console.log("Initializing Moyasar Payment Form with:", moyasarConfig);
-
-    if (window.Moyasar) {
-      window.Moyasar.init({
-        element: ".mysr-form",
-        amount: moyasarConfig.amount * 100,
-        currency: "SAR",
-        description: `Order #${moyasarConfig.orderId}`,
-        publishable_api_key: "pk_test_E4j6enesChywd2Po4Phx8UqSWp1cV87JsVXSWxnt",
-        callback_url: moyasarConfig.callbackUrl,
-        methods: ["creditcard"],
-      });
-    }
-  }, [paymentReady, moyasarConfig]);
-
+  
   return (
     <form
       autoComplete="true"
@@ -241,7 +211,9 @@ const PlaceOrder = () => {
         <div className="mt-12">
           <Title text1={"Payment"} text2={"Method"} />
           {/* Payment Method Selection */}
-          <div className="flex gap-3 flex-col lg:flex-row">
+          <div
+            className="flex gap-3 flex-col lg:flex-row"
+          >
             <div
               onClick={() => setMethod("COD")}
               className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
@@ -269,26 +241,14 @@ const PlaceOrder = () => {
               </p>
             </div>
           </div>
-          {/* Moyasar payment form */}
-          {paymentReady && (
-            <div className="mt-4">
-              <div className="mysr-form"></div>
-              <p className="text-sm text-gray-500 mt-2">
-                سيتم تحويلك إلى صفحة الدفع الآمنة من مویاسر لإتمام عملية الدفع
-              </p>
-            </div>
-          )}
-          {/* Checkout button */}
-          {!paymentReady && (
-            <div className="w-full text-end mt-8">
-              <button
-                type="submit"
-                className="bg-black text-white px-16 py-3 text-sm rounded-sm"
-              >
-                <h2> checkout </h2>
-              </button>
-            </div>
-          )}
+          <div className="w-full text-end mt-8">
+            <button
+              type="submit"
+              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
+            >
+              <h2> checkout </h2>
+            </button>
+          </div>
         </div>
       </div>
     </form>
