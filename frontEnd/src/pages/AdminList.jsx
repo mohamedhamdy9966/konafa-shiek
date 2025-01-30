@@ -128,19 +128,21 @@ const List = ({ token }) => {
 
       {/* Edit Modal */}
       {editProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded w-96">
-            <h2>Edit Product</h2>
-            <form onSubmit={updateProduct}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg md:max-w-2xl overflow-y-auto max-h-[90vh]">
+            <h2 className="text-lg font-semibold mb-4">Edit Product</h2>
+
+            <form onSubmit={updateProduct} className="space-y-4">
               <input
                 type="text"
                 value={editProduct.name}
                 onChange={(e) =>
                   setEditProduct({ ...editProduct, name: e.target.value })
                 }
-                className="border p-2 w-full"
+                className="border p-2 w-full rounded"
                 placeholder="Product Name"
               />
+
               <textarea
                 value={editProduct.description}
                 onChange={(e) =>
@@ -149,71 +151,97 @@ const List = ({ token }) => {
                     description: e.target.value,
                   })
                 }
-                className="border p-2 w-full"
+                className="border p-2 w-full rounded"
                 placeholder="Product Description"
-              />
-              {/* Add inputs for sizes and prices */}
-              {Object.keys(editProduct.sizes).map((size) => (
-                <div key={size}>
-                  <label>{size} Price:</label>
-                  <input
-                    type="number"
-                    value={editProduct.sizes[size].price}
-                    onChange={(e) =>
-                      setEditProduct({
-                        ...editProduct,
-                        sizes: {
-                          ...editProduct.sizes,
-                          [size]: {
-                            ...editProduct.sizes[size],
-                            price: e.target.value,
-                          },
-                        },
-                      })
-                    }
-                    className="border p-2 w-full"
-                  />
-                </div>
-              ))}
-              {/* Add file inputs for images */}
-              <input
-                type="file"
-                onChange={(e) =>
-                  setEditProduct({ ...editProduct, image1: e.target.files[0] })
-                }
-              />
-              <input
-                type="file"
-                onChange={(e) =>
-                  setEditProduct({ ...editProduct, image2: e.target.files[0] })
-                }
-              />
-              <input
-                type="file"
-                onChange={(e) =>
-                  setEditProduct({ ...editProduct, image3: e.target.files[0] })
-                }
-              />
-              <input
-                type="file"
-                onChange={(e) =>
-                  setEditProduct({ ...editProduct, image4: e.target.files[0] })
-                }
+                rows="3"
               />
 
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-2 py-1 mt-2"
-              >
-                Update
-              </button>
-              <button
-                type="button"
-                className="bg-gray-500 text-white px-2 py-1 mt-2 ml-2"
-                onClick={() => setEditProduct(null)}
-              >
-                Cancel
-              </button>
+              {/* Sizes & Prices */}
+              <div className="space-y-2">
+                {Object.keys(editProduct.sizes).map((size) => (
+                  <div key={size} className="flex items-center gap-2">
+                    <label className="w-16 font-medium">{size} Price:</label>
+                    <input
+                      type="number"
+                      value={editProduct.sizes[size].price}
+                      onChange={(e) =>
+                        setEditProduct({
+                          ...editProduct,
+                          sizes: {
+                            ...editProduct.sizes,
+                            [size]: {
+                              ...editProduct.sizes[size],
+                              price: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                      className="border p-2 w-full rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Image Uploads */}
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      image1: e.target.files[0],
+                    })
+                  }
+                  className="border p-2 w-full rounded"
+                />
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      image2: e.target.files[0],
+                    })
+                  }
+                  className="border p-2 w-full rounded"
+                />
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      image3: e.target.files[0],
+                    })
+                  }
+                  className="border p-2 w-full rounded"
+                />
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      image4: e.target.files[0],
+                    })
+                  }
+                  className="border p-2 w-full rounded"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-2">
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                  onClick={() => setEditProduct(null)}
+                >
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
