@@ -30,10 +30,10 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/collection", label: "Menu" },
-    { to: "/about", label: "About" },
-    { to: "/contact", label: "Contact" },
+    { to: "/", label: "الصفحة الرئيسية" },
+    { to: "/collection", label: "الأصناف" },
+    { to: "/about", label: "عن كنافة شيك" },
+    { to: "/contact", label: "تواصل معنا" },
   ];
 
   return (
@@ -139,7 +139,7 @@ const Navbar = () => {
               alt="close"
               className="h-4 rotate-180"
             />
-            <p>Back</p>
+            <p>العودة</p>
           </div>
 
           {/* Sidebar Links */}
