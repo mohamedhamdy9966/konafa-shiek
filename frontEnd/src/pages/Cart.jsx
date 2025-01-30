@@ -4,11 +4,13 @@ import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 import { toast } from 'react-toastify';
+import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
     useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
+  const [animatingItems, setAnimatingItems] = useState(new Set());
 
   useEffect(() => {
     if (products && products.length > 0) {
@@ -45,35 +47,59 @@ const Cart = () => {
     }
   }, [cartItems, products]);
 
-  const handleQuantityUpdate = (productId, size, newQuantity) => {
-    if (newQuantity === 0) {
-      const productData = products.find(product => product._id === productId);
-      toast.success(`تم حذف ${productData.name} من السلة`, {
-        position: "top-right",
-        autoClose: 2000,
-        rtl: true
+  const handleQuantityUpdate = (productId, size, newQuantity, oldQuantity) => {
+    // Add animation class
+    setAnimatingItems(prev => new Set(prev.add(`${productId}-${size}`)));
+    setTimeout(() => {
+      setAnimatingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(`${productId}-${size}`);
+        return newSet;
       });
-    } else {
-      const productData = products.find(product => product._id === productId);
-      toast.success(`تم تحديث كمية ${productData.name} إلى ${newQuantity}`, {
+    }, 300);
+
+    const productData = products.find(product => product._id === productId);
+    
+    if (newQuantity === 0) {
+      toast.info('🗑️ تم حذف المنتج من السلة', {
         position: "top-right",
         autoClose: 2000,
-        rtl: true
+        rtl: true,
+        theme: "colored"
+      });
+    } else if (newQuantity > oldQuantity) {
+      toast.success(`➕ تم زيادة الكمية إلى ${newQuantity}`, {
+        position: "top-right",
+        autoClose: 2000,
+        rtl: true,
+        theme: "colored"
+      });
+    } else if (newQuantity < oldQuantity) {
+      toast.warning(`➖ تم تقليل الكمية إلى ${newQuantity}`, {
+        position: "top-right",
+        autoClose: 2000,
+        rtl: true,
+        theme: "colored"
       });
     }
+    
     updateQuantity(productId, size, newQuantity);
   };
 
   if (!products) {
-    return <div className="text-center mt-10">Loading cart...</div>;
+    return (
+      <div className="flex items-center justify-center mt-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="border-t pt-14">
-      <div className="text-2xl mb-3">
+    <div className="border-t pt-14 container mx-auto px-4">
+      <div className="text-2xl mb-6">
         <Title text1={"سلة"} text2={"مشترياتك"} />
       </div>
-      <div>
+      <div className="space-y-4">
         {cartData && cartData.length > 0 ? (
           cartData.map((itemSelected, index) => {
             const productData = products.find(
@@ -88,97 +114,146 @@ const Cart = () => {
               (productData.sizes?.[itemSelected.size]?.price || 0) +
               (itemSelected.sauceSize || 0);
             const totalPrice = itemPrice * itemSelected.quantity;
+            const isAnimating = animatingItems.has(`${itemSelected._id}-${itemSelected.size}`);
 
             return (
               <div
                 key={index}
-                className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr] items-center gap-4"
+                className={`bg-white rounded-lg shadow-sm p-4 transition-all duration-300 ${
+                  isAnimating ? 'scale-105' : ''
+                }`}
               >
-                <div className="flex items-start gap-6">
-                  <img
-                    className="w-16 sm:w-20"
-                    src={productData.image[0]}
-                    alt="image"
-                  />
-                  <div>
-                    <p className="text-xs sm:text-lg font-medium">
-                      {productData.name}
-                    </p>
-                    <div className="flex items-center gap-5 mt-2">
-                      <p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <img
+                      className="w-20 h-20 object-cover rounded-md"
+                      src={productData.image[0]}
+                      alt={productData.name}
+                    />
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-gray-800">
+                        {productData.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-3 mt-2">
+                        <span className="text-gray-600">
+                          {currency}
+                          {itemPrice.toFixed(2)}
+                        </span>
+                        <span className="px-2 py-1 bg-gray-100 rounded-md text-sm">
+                          {itemSelected.size}
+                        </span>
+                      </div>
+                      {itemSelected.sauceSize > 0 && (
+                        <p className="mt-2 text-sm text-gray-600">
+                          حجم الصوص:{" "}
+                          {itemSelected.sauceSize === 4
+                            ? "XS"
+                            : itemSelected.sauceSize === 5
+                            ? "S"
+                            : itemSelected.sauceSize === 10
+                            ? "M"
+                            : "L"}
+                        </p>
+                      )}
+                      {itemSelected.selectedSauce && itemSelected.selectedSauce.length > 0 && (
+                        <p className="mt-1 text-sm text-gray-600">
+                          أنواع الصوصات: {itemSelected.selectedSauce.join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          handleQuantityUpdate(
+                            itemSelected._id,
+                            itemSelected.size,
+                            itemSelected.quantity - 1,
+                            itemSelected.quantity
+                          )
+                        }
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                        disabled={itemSelected.quantity <= 1}
+                      >
+                        <MinusCircle size={20} />
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={itemSelected.quantity}
+                        onChange={(e) =>
+                          handleQuantityUpdate(
+                            itemSelected._id,
+                            itemSelected.size,
+                            Number(e.target.value),
+                            itemSelected.quantity
+                          )
+                        }
+                        className="w-16 text-center border rounded-md py-1"
+                      />
+                      <button
+                        onClick={() =>
+                          handleQuantityUpdate(
+                            itemSelected._id,
+                            itemSelected.size,
+                            itemSelected.quantity + 1,
+                            itemSelected.quantity
+                          )
+                        }
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                      >
+                        <PlusCircle size={20} />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleQuantityUpdate(itemSelected._id, itemSelected.size, 0, itemSelected.quantity)
+                      }
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                    <div className="min-w-[100px] text-right">
+                      <p className="font-medium text-gray-800">
                         {currency}
-                        {itemPrice.toFixed(2)}
-                      </p>
-                      <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50">
-                        {itemSelected.size}
+                        {totalPrice.toFixed(2)}
                       </p>
                     </div>
-                    {itemSelected.sauceSize > 0 && (
-                      <p className="mt-2">
-                        حجم الصوص:{" "}
-                        {itemSelected.sauceSize === 4
-                          ? "XS"
-                          : itemSelected.sauceSize === 5
-                          ? "S"
-                          : itemSelected.sauceSize === 10
-                          ? "M"
-                          : "L"}
-                      </p>
-                    )}
-                    {itemSelected.selectedSauce && itemSelected.selectedSauce.length > 0 && (
-                      <p className="mt-2">
-                        أنواع الصوصات: {itemSelected.selectedSauce.join(", ")}
-                      </p>
-                    )}
                   </div>
                 </div>
-                <input
-                  onChange={(e) =>
-                    e.target.value === "" || e.target.value === "0"
-                      ? null
-                      : handleQuantityUpdate(
-                          itemSelected._id,
-                          itemSelected.size,
-                          Number(e.target.value)
-                        )
-                  }
-                  className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
-                  type="number"
-                  min={1}
-                  defaultValue={itemSelected.quantity}
-                />
-                <img
-                  onClick={() =>
-                    handleQuantityUpdate(itemSelected._id, itemSelected.size, 0)
-                  }
-                  src={assets.bin_icon}
-                  alt="binIcon"
-                  className="w-4 mr-4 sm:mr-5 cursor-pointer"
-                />
-                <p className="text-sm font-medium">
-                  الإجمالي: {currency}
-                  {totalPrice.toFixed(2)}
-                </p>
               </div>
             );
           })
         ) : (
-          <div>برجاء إضافة المنتجات التي ترغب بها</div>
-        )}
-      </div>
-      <div className="flex justify-end my-20">
-        <div className="w-full sm:w-[450px]">
-          <CartTotal />
-          <div className="w-full text-end">
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <p className="text-gray-600 mb-4">السلة فارغة</p>
             <button
-              onClick={() => navigate("/place-order")}
-              className="bg-black text-white text-sm my-8 px-8 py-3"
+              onClick={() => navigate("/")}
+              className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors"
             >
-              تأكيد الطلب و الدفع
+              تصفح المنتجات
             </button>
           </div>
-        </div>
+        )}
       </div>
+      
+      {cartData.length > 0 && (
+        <div className="flex justify-end my-8">
+          <div className="w-full sm:w-[450px]">
+            <CartTotal />
+            <div className="w-full text-end">
+              <button
+                onClick={() => navigate("/place-order")}
+                className="bg-black text-white px-8 py-3 rounded-md hover:bg-gray-800 transition-colors"
+              >
+                تأكيد الطلب و الدفع
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
