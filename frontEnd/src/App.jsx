@@ -20,9 +20,17 @@ import AdminAdd from "./pages/AdminAdd";
 import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
-// import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
 
+const styles = `
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin 1.2s linear infinite;
+}
+`;
 // eslint-disable-next-line react-refresh/only-export-components
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "SAR";
@@ -30,21 +38,41 @@ export const currency = "SAR";
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("token", token);
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken.isAdmin || false);
-      } catch (error) {
-        console.error("Error decoding token:", error);
+    const initializeApp = () => {
+      localStorage.setItem("token", token);
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          setIsAdmin(decodedToken.isAdmin || false);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          setIsAdmin(false);
+        }
+      } else {
         setIsAdmin(false);
       }
-    } else {
-      setIsAdmin(false);
-    }
+      setIsLoading(false);
+    };
+
+    // Add slight delay for smooth transition
+    const timeout = setTimeout(initializeApp, 300);
+    return () => clearTimeout(timeout);
   }, [token]);
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+        <style>{styles}</style>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin-slow"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px[9vw]">
@@ -61,25 +89,25 @@ const App = () => {
                 <Route
                   path="/add"
                   element={
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                       <AdminAdd token={token} />
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                   }
                 />
                 <Route
                   path="/list"
                   element={
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                       <AdminList token={token} />
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                   }
                 />
                 <Route
                   path="/konafaOrders"
                   element={
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                       <AdminOrders token={token} />
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                   }
                 />
                 <Route path="*" element={<Navigate to="/add" />} />
