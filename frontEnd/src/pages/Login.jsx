@@ -57,7 +57,10 @@ const Login = ({ setToken }) => {
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${backendUrl}/api/user/register`, formData);
+      const response = await axios.post(
+        `${backendUrl}/api/user/register`,
+        formData
+      );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
         toast.success("Account created successfully!");
@@ -88,10 +91,14 @@ const Login = ({ setToken }) => {
       if (currentState === "SignUp") {
         await handleSignUp();
       } else {
-        try {
-          await handleUserLogin();
-        } catch {
-          await handleAdminLogin();
+        if (currentState === "Login") {
+          if (formData.email === import.meta.env.VITE_ADMIN_EMAIL) {
+            await handleAdminLogin(); // Admin login
+          } else {
+            await handleUserLogin(); // User login
+          }
+        } else {
+          await handleSignUp();
         }
       }
     } catch (error) {
@@ -147,7 +154,11 @@ const Login = ({ setToken }) => {
           <div className="w-full flex justify-between text-sm mt-[-8px] mb-4">
             <p className="cursor-pointer">Forgot Your Password?</p>
             <p
-              onClick={() => setCurrentState((prev) => (prev === "Login" ? "SignUp" : "Login"))}
+              onClick={() =>
+                setCurrentState((prev) =>
+                  prev === "Login" ? "SignUp" : "Login"
+                )
+              }
               className="cursor-pointer text-blue-500"
             >
               {currentState === "Login" ? "Create Account" : "Login Here"}
@@ -160,8 +171,10 @@ const Login = ({ setToken }) => {
           >
             {loading ? (
               <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : currentState === "Login" ? (
+              "Sign In"
             ) : (
-              currentState === "Login" ? "Sign In" : "Sign Up"
+              "Sign Up"
             )}
           </button>
         </form>
