@@ -42,13 +42,37 @@ const PlaceOrder = () => {
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-
     setFormData((data) => ({ ...data, [name]: value }));
+  };
+
+  const checkAuthentication = () => {
+    const userId = localStorage.getItem("userId") || token?.userId;
+    if (!userId) {
+      toast.error("برجاء تسجيل الدخول لإتمام عملية الشراء", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        rtl: true,
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+      return false;
+    }
+    return true;
   };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+      if (!checkAuthentication()) {
+        return;
+      }
+
       console.log("Cart Items:", cartItems);
       if (Object.keys(cartItems).length === 0) {
         toast.error("Your cart is empty");
@@ -90,11 +114,6 @@ const PlaceOrder = () => {
       console.log("Order Items:", orderItems);
 
       const userId = localStorage.getItem("userId") || token?.userId || "";
-      if (!userId) {
-        toast.error("User ID is missing. Please log in.");
-        return;
-      }
-
       let orderData = {
         userId,
         address: formData,
@@ -143,7 +162,6 @@ const PlaceOrder = () => {
           }
           break;
         }
-        // PlaceOrder.js - Update the 'applepay' case in onSubmitHandler
         case "applepay": {
           if (
             typeof window === "undefined" ||
@@ -154,7 +172,6 @@ const PlaceOrder = () => {
             return;
           }
 
-          // Create order first to get order ID
           const orderResponse = await axios.post(
             backendUrl + "/api/order/prepare",
             orderData,
@@ -185,7 +202,7 @@ const PlaceOrder = () => {
                 `${backendUrl}/api/applepay/validate-merchant`,
                 {
                   validationURL: event.validationURL,
-                  domainName: window.location.hostname, // Add domain name
+                  domainName: window.location.hostname,
                 }
               );
               session.completeMerchantValidation(validationResponse.data);
@@ -203,7 +220,7 @@ const PlaceOrder = () => {
                 backendUrl + "/api/order/applepay",
                 {
                   orderId,
-                  paymentToken: JSON.stringify(paymentToken), // Send full token
+                  paymentToken: JSON.stringify(paymentToken),
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
               );
@@ -228,7 +245,7 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.error("Error in onSubmitHandler:", error); // Log the full error
+      console.error("Error in onSubmitHandler:", error);
       toast.error(error.message);
     }
   };
@@ -239,6 +256,7 @@ const PlaceOrder = () => {
       onSubmit={onSubmitHandler}
       className="border-t flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh]"
     >
+      {/* Rest of the JSX remains exactly the same */}
       {/* leftSide */}
       <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
         <div className="text-xl sm:text-2xl my-3">
