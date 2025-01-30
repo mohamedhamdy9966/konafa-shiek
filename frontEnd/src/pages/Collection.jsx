@@ -9,8 +9,8 @@ const Collection = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
-  // const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
+  const [loading, setLoading] = useState(true); // Added loading state
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -21,39 +21,49 @@ const Collection = () => {
   };
 
   const applyFilter = () => {
-    let productsCopy = products.slice();
+    setLoading(true); // Set loading before filtering
+    setTimeout(() => {
+      let productsCopy = products.slice();
 
-    if (showSearch && search) {
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
+      if (showSearch && search) {
+        productsCopy = productsCopy.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase())
+        );
+      }
 
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category)
-      );
-    }
+      if (category.length > 0) {
+        productsCopy = productsCopy.filter((item) =>
+          category.includes(item.category)
+        );
+      }
 
-    setFilterProducts(productsCopy);
+      setFilterProducts(productsCopy);
+      setLoading(false); // Disable loading after filtering
+    }, 500); // Simulating a short delay for a smooth experience
   };
 
   const sortProduct = () => {
-    let filterProductsCopy = filterProducts.slice();
+    setLoading(true); // Set loading before sorting
+    setTimeout(() => {
+      let filterProductsCopy = [...filterProducts];
 
-    switch (sortType) {
-      case "low-high":
-        setFilterProducts(filterProductsCopy.sort((a, b) => a.price - b.price));
-        break;
+      switch (sortType) {
+        case "low-high":
+          filterProductsCopy.sort((a, b) => a.price - b.price);
+          break;
 
-      case "high-low":
-        setFilterProducts(filterProductsCopy.sort((a, b) => b.price - a.price));
-        break;
+        case "high-low":
+          filterProductsCopy.sort((a, b) => b.price - a.price);
+          break;
 
-      default:
-        applyFilter();
-        break;
-    }
+        default:
+          applyFilter();
+          return;
+      }
+
+      setFilterProducts(filterProductsCopy);
+      setLoading(false); // Disable loading after sorting
+    }, 2000);
   };
 
   useEffect(() => {
@@ -89,45 +99,23 @@ const Collection = () => {
         >
           <p className="mb-3 text-sm font-medium">Categories</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Konafa"}
-                onChange={toggleCategory}
-              />{" "}
-              كنافة
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"BentElShn"}
-                onChange={toggleCategory}
-              />{" "}
-              بنت الصحن
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"KonafaMini"}
-                onChange={toggleCategory}
-              />{" "}
-              كنافة ميني
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"KonafaShiek"}
-                onChange={toggleCategory}
-              />{" "}
-              كنافة شيك
-            </p>
+            {["Konafa", "BentElShn", "KonafaMini", "KonafaShiek"].map(
+              (categoryName) => (
+                <p key={categoryName} className="flex gap-2">
+                  <input
+                    className="w-3"
+                    type="checkbox"
+                    value={categoryName}
+                    onChange={toggleCategory}
+                  />{" "}
+                  {categoryName}
+                </p>
+              )
+            )}
           </div>
         </div>
       </div>
+
       {/* right side */}
       <div className="flex-1">
         <div className="flex justify-between text-base sm:text-2xl mb-4">
@@ -142,18 +130,28 @@ const Collection = () => {
             <option value="high-low">Sort by : high to low</option>
           </select>
         </div>
-        {/* Map products */}
+
+        {/* Map products or show skeleton loaders */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filterProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              name={item.name}
-              price={item.price}
-              image={item.image}
-              id={item._id}
-              category={item.category}
-            />
-          ))}
+          {loading
+            ? Array(8)
+                .fill(null)
+                .map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-200 animate-pulse h-48 rounded-lg"
+                  />
+                ))
+            : filterProducts.map((item, index) => (
+                <ProductItem
+                  key={index}
+                  name={item.name}
+                  price={item.price}
+                  image={item.image}
+                  id={item._id}
+                  category={item.category}
+                />
+              ))}
         </div>
       </div>
     </div>
