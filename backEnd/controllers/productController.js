@@ -83,6 +83,65 @@ const listProducts = async (req, res) => {
   }
 };
 
+// Update product
+const updateProduct = async (req, res) => {
+  try {
+    const { productId, name, description, category, sizes, bestSeller } = req.body;
+
+    // Parse sizes JSON if needed
+    let parsedSizes;
+    try {
+      parsedSizes = JSON.parse(sizes);
+    } catch (error) {
+      return res.status(400).json({ success: false, message: "Invalid sizes format" });
+    }
+
+    // Validate sizes
+    if (!parsedSizes || typeof parsedSizes !== "object") {
+      return res.status(400).json({ success: false, message: "Invalid sizes" });
+    }
+
+    // Handle images if new ones are uploaded
+    let updatedImages = [];
+    if (req.files) {
+      const imageKeys = ["image1", "image2", "image3", "image4"];
+      const uploadedImages = imageKeys
+        .map((key) => req.files[key] && req.files[key][0])
+        .filter(Boolean);
+
+      updatedImages = await Promise.all(
+        uploadedImages.map(async (file) => {
+          let result = await cloudinary.uploader.upload(file.path, { resource_type: "image" });
+          return result.secure_url;
+        })
+      );
+    }
+
+    // Update product in the database
+    const updatedProduct = await productModel.findByIdAndUpdate(
+      productId,
+      {
+        name,
+        description,
+        category,
+        sizes: parsedSizes,
+        bestSeller: bestSeller === "true" || bestSeller === true,
+        ...(updatedImages.length > 0 && { image: updatedImages }),
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, message: "Product updated successfully", product: updatedProduct });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to update product" });
+  }
+};
+
 // Remove product
 const removeProduct = async (req, res) => {
   try {
