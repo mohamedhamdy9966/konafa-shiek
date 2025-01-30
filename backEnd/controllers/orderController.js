@@ -58,7 +58,7 @@ const placeOrderMoyasar = async (req, res) => {
       items,
       address,
       amount,
-      paymentMethod: "moyasar",
+      paymentMethod: paymentSource.type, // Store the payment type
       payment: false,
       date: Date.now(),
     };
@@ -66,9 +66,9 @@ const placeOrderMoyasar = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Prepare dynamic payment request
+    // Prepare dynamic payment request for Moyasar
     const paymentData = {
-      amount: amount * 100,
+      amount: amount * 100, // Convert to cents
       currency: "SAR",
       description: `Order ID: ${newOrder._id}`,
       callback_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
@@ -77,7 +77,7 @@ const placeOrderMoyasar = async (req, res) => {
         orderId: newOrder._id,
         userId: userId,
       },
-      source: paymentSource, // Use user-provided source
+      source: paymentSource, // Use user-provided source (creditcard or applepay)
     };
 
     const moyasarResponse = await axios.post(

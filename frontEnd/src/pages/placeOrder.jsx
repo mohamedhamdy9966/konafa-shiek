@@ -142,7 +142,24 @@ const PlaceOrder = () => {
           }
           break;
         }
-
+        case "applepay": {
+          const responseApplePay = await axios.post(
+            backendUrl + "/api/order/moyasar",
+            {
+              ...orderData,
+              paymentSource: {
+                type: "applepay",
+              },
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (responseApplePay.data.success) {
+            window.location.replace(responseApplePay.data.payment_url);
+          } else {
+            toast.error(responseApplePay.data.message);
+          }
+          break;
+        }
         default:
           break;
       }
@@ -261,6 +278,19 @@ const PlaceOrder = () => {
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
                 pay with moyasar
+              </p>
+            </div>
+            <div
+              onClick={() => setMethod("applepay")}
+              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "applepay" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                Pay with Apple Pay
               </p>
             </div>
           </div>
