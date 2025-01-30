@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import { toast } from 'react-toastify';
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
@@ -27,10 +28,9 @@ const Cart = () => {
                 quantity: cartItems[items][item].quantity,
                 sauceSize: cartItems[items][item].sauceSize,
                 selectedSauce: cartItems[items][item].selectedSauce || [],
-                image: productData.image[0], // Include the image URL
+                image: productData.image[0],
               });
             } else {
-              // Remove items that are no longer available
               if (updatedCartItems[items]) {
                 delete updatedCartItems[items][item];
                 if (Object.keys(updatedCartItems[items]).length === 0) {
@@ -45,7 +45,25 @@ const Cart = () => {
     }
   }, [cartItems, products]);
 
-  // Show loading message if products are not yet loaded
+  const handleQuantityUpdate = (productId, size, newQuantity) => {
+    if (newQuantity === 0) {
+      const productData = products.find(product => product._id === productId);
+      toast.success(`تم حذف ${productData.name} من السلة`, {
+        position: "top-right",
+        autoClose: 2000,
+        rtl: true
+      });
+    } else {
+      const productData = products.find(product => product._id === productId);
+      toast.success(`تم تحديث كمية ${productData.name} إلى ${newQuantity}`, {
+        position: "top-right",
+        autoClose: 2000,
+        rtl: true
+      });
+    }
+    updateQuantity(productId, size, newQuantity);
+  };
+
   if (!products) {
     return <div className="text-center mt-10">Loading cart...</div>;
   }
@@ -61,13 +79,11 @@ const Cart = () => {
             const productData = products.find(
               (product) => product._id === itemSelected._id
             );
-            // Skip if the product is not found
             if (!productData) {
               console.warn(`Product with ID ${itemSelected._id} not found`);
               return null;
             }
 
-            // Calculate the total price for this item
             const itemPrice =
               (productData.sizes?.[itemSelected.size]?.price || 0) +
               (itemSelected.sauceSize || 0);
@@ -120,7 +136,7 @@ const Cart = () => {
                   onChange={(e) =>
                     e.target.value === "" || e.target.value === "0"
                       ? null
-                      : updateQuantity(
+                      : handleQuantityUpdate(
                           itemSelected._id,
                           itemSelected.size,
                           Number(e.target.value)
@@ -133,7 +149,7 @@ const Cart = () => {
                 />
                 <img
                   onClick={() =>
-                    updateQuantity(itemSelected._id, itemSelected.size, 0)
+                    handleQuantityUpdate(itemSelected._id, itemSelected.size, 0)
                   }
                   src={assets.bin_icon}
                   alt="binIcon"
