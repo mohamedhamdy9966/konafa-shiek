@@ -18,16 +18,54 @@ const Login = ({ setToken }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAuth = async (url, successMessage, redirectPath) => {
+  const handleUserLogin = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.post(`${backendUrl}${url}`, formData);
+      const response = await axios.post(`${backendUrl}/api/user/login`, {
+        email: formData.email,
+        password: formData.password,
+      });
       if (response.data.success) {
-        await handleSuccess(response.data, redirectPath);
-        toast.success(successMessage);
+        await handleSuccess(response.data, "/");
+        toast.success("Logged in successfully!");
       }
     } catch (err) {
-      toast.error("Invalid credentials or sign-up failed");
+      toast.error("Invalid user credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdminLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/admin`, {
+        email: formData.email,
+        password: formData.password,
+      });
+      if (response.data.success) {
+        await handleSuccess(response.data, "/add");
+        toast.success("Admin logged in successfully!");
+      }
+    } catch (err) {
+      toast.error("Invalid admin credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/register`, formData);
+      if (response.data.success) {
+        await handleSuccess(response.data, "/");
+        toast.success("Account created successfully!");
+      } else {
+        toast.error(response.data.message || "Sign-up failed");
+      }
+    } catch (err) {
+      toast.error(err.message || "Sign-up failed");
     } finally {
       setLoading(false);
     }
@@ -44,14 +82,20 @@ const Login = ({ setToken }) => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    if (currentState === "SignUp") {
-      await handleAuth("/api/user/register", "Account created successfully!", "/");
-    } else {
-      try {
-        await handleAuth("/api/user/login", "Logged in successfully!", "/");
-      } catch {
-        await handleAuth("/api/user/admin", "Admin logged in successfully!", "/add");
+    if (loading) return;
+
+    try {
+      if (currentState === "SignUp") {
+        await handleSignUp();
+      } else {
+        try {
+          await handleUserLogin();
+        } catch {
+          await handleAdminLogin();
+        }
       }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -71,7 +115,7 @@ const Login = ({ setToken }) => {
                 value={formData.name}
                 type="text"
                 className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-                placeholder="Your Name"
+                placeholder="إسمك باللغة الإنجليزية"
                 required
               />
             </div>
@@ -84,7 +128,7 @@ const Login = ({ setToken }) => {
               value={formData.email}
               type="email"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-              placeholder="Your Email"
+              placeholder="بريدك الإلكتروني"
               required
             />
           </div>
@@ -96,46 +140,26 @@ const Login = ({ setToken }) => {
               value={formData.password}
               type="password"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-              placeholder="Your Password"
+              placeholder="كلمة السر الخاصة بك أكثر من 8 أرقم"
               required
             />
           </div>
           <div className="w-full flex justify-between text-sm mt-[-8px] mb-4">
             <p className="cursor-pointer">Forgot Your Password?</p>
             <p
-              onClick={() =>
-                setCurrentState((prev) => (prev === "Login" ? "SignUp" : "Login"))
-              }
+              onClick={() => setCurrentState((prev) => (prev === "Login" ? "SignUp" : "Login"))}
               className="cursor-pointer text-blue-500"
             >
               {currentState === "Login" ? "Create Account" : "Login Here"}
             </p>
           </div>
           <button
-            className="mt-2 w-full py-2 px-4 rounded-md text-white bg-black flex justify-center items-center"
+            className="mt-2 w-full py-2 px-4 rounded-md text-white bg-black flex items-center justify-center"
             type="submit"
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  ></path>
-                </svg>
-                Processing...
-              </span>
+              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               currentState === "Login" ? "Sign In" : "Sign Up"
             )}

@@ -12,7 +12,7 @@ const Home = () => {
     // Simulate loading time
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 15000);
 
     return () => clearTimeout(timer);
   }, []);
