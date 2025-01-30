@@ -5,8 +5,8 @@ import ProductItem from "./ProductItem";
 
 const BestSeller = () => {
   const { products } = useContext(ShopContext);
-
   const [bestSeller, setBestSeller] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     if (products && products.length > 0) {
@@ -15,6 +15,7 @@ const BestSeller = () => {
         return item.bestSeller === true;  // Ensure we check the exact boolean value
       });
       setBestSeller(bestProduct.slice(0, 5));
+      setLoading(false); // Set loading to false once data is fetched
     }
   }, [products]);
 
@@ -30,7 +31,12 @@ const BestSeller = () => {
           بأطيب الحلويات الشرقية واستمتعوا بتجربة فريدة مع كنافة شِيك!{" "}
         </p>
       </div>
-      {bestSeller.length > 0 ? (
+      {loading ? (
+        // Loading spinner or skeleton loader
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      ) : bestSeller.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
           {bestSeller.map((item, index) => (
             <ProductItem

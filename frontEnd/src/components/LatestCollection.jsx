@@ -6,9 +6,15 @@ import ProductItem from "./ProductItem";
 const LatestCollection = () => {
   const { products } = useContext(ShopContext);
   const [latestProducts, setLatestProducts] = useState([]);
-  useEffect(()=>{
-    setLatestProducts(products.slice(0,5))
-  },[products])
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLatestProducts(products.slice(0, 5));
+      setLoading(false);
+    }, 15000); 
+  }, [products]);
 
   return (
     <div className="my-10">
@@ -20,21 +26,30 @@ const LatestCollection = () => {
           منطقة القصيم، نجمع بين النكهة الأصيلة والإبداع العصري لتناسب جميع
           الأذواق. سواء كنت تبحث عن الكنافة التقليدية أو الكنافة المبتكرة بلمسة
           عصرية، نحن هنا لنلبي رغبتك. زورونا الآن واستمتعوا بأشهى الحلويات
-          الشرقية التي تُحضر بحب وإتقان!{" "}
+          الشرقية التي تُحضر بحب وإتقان!
         </p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {latestProducts.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name || "Konafa-Shiek"}
-            sizes={item.sizes || {}}
-            category={item.category}
-          />
-        ))}
+        {loading
+          ? Array(5)
+              .fill(null)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-200 animate-pulse h-48 rounded-lg"
+                />
+              ))
+          : latestProducts.map((item, index) => (
+              <ProductItem
+                key={index}
+                id={item._id}
+                image={item.image}
+                name={item.name || "Konafa-Shiek"}
+                sizes={item.sizes || {}}
+                category={item.category}
+              />
+            ))}
       </div>
     </div>
   );
