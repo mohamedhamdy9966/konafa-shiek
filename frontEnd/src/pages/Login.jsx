@@ -7,7 +7,6 @@ const Login = ({ setToken }) => {
   const [currentState, setCurrentState] = useState("Login");
   const { navigate, backendUrl } = useContext(ShopContext);
   const [loading, setLoading] = useState(false);
-  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,14 +28,15 @@ const Login = ({ setToken }) => {
       if (response.data.success) {
         await handleSuccess(response.data, "/");
         toast.success("Logged in successfully!");
+        return true;
       }
     } catch (err) {
-      toast.error("Invalid user credentials");
+      return false; // Indicate failure
     } finally {
       setLoading(false);
     }
   };
-
+  
   const handleAdminLogin = async () => {
     setLoading(true);
     try {
@@ -47,13 +47,16 @@ const Login = ({ setToken }) => {
       if (response.data.success) {
         await handleSuccess(response.data, "/add");
         toast.success("Admin logged in successfully!");
+        return true;
       }
     } catch (err) {
-      toast.error("Invalid admin credentials");
+      toast.error("Invalid credentials");
+      return false;
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSignUp = async () => {
     setLoading(true);
@@ -87,15 +90,14 @@ const Login = ({ setToken }) => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     if (loading) return;
-
+  
     try {
       if (currentState === "SignUp") {
         await handleSignUp();
       } else {
         // Attempt user login first
-        try {
-          await handleUserLogin();
-        } catch (userError) {
+        const userLoginSuccess = await handleUserLogin();
+        if (!userLoginSuccess) {
           // If user login fails, attempt admin login
           await handleAdminLogin();
         }
@@ -104,6 +106,7 @@ const Login = ({ setToken }) => {
       toast.error(error.message);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center w-full">
