@@ -7,7 +7,7 @@ import { ShopContext } from "../context/ShopContext";
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
-
+  const [loading, setLoading] = useState(true);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("S");
@@ -15,27 +15,34 @@ const Product = () => {
   const [selectedSauce, setSelectedSauce] = useState([]);
   const [isSauceSizeSelected, setIsSauceSizeSelected] = useState(false);
 
-  const fetchProductData = async () => {
-    products.find((item) => {
-      if (!products || products.length === 0) {
-        console.warn("Products not loaded yet");
-        return;
-      }
-      if (item._id === productId) {
-        setProductData({ ...item, sizes: new Map(Object.entries(item.sizes)) });
-        setImage(item.image[0]);
+  useEffect(() => {
+    setLoading(true);
+    const fetchProductData = () => {
+      const product = products.find((item) => item._id === productId);
+      if (product) {
+        setProductData({
+          ...product,
+          sizes: new Map(Object.entries(product.sizes)),
+        });
+        setImage(product.image[0]);
         setSize("S");
         setSauceSize(0);
         setSelectedSauce([]);
         setIsSauceSizeSelected(false);
-        return null;
       }
-    });
-  };
+      setTimeout(() => setLoading(false), 1500); // Simulating a delay
+    };
 
-  useEffect(() => {
     fetchProductData();
   }, [productId, products]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-16 h-16 border-8 border-dotted border-t-blue-500 border-green-400 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const handleSizeClick = (key) => {
     if (size === key) {
@@ -58,7 +65,6 @@ const Product = () => {
       setIsSauceSizeSelected(true);
     }
   };
-  
 
   const handleSauceTypeToggle = (sauce) => {
     if (isSauceSizeSelected) {
@@ -125,9 +131,7 @@ const Product = () => {
           </div>
           <p className="mt-5 text-sm text-slate-700 font-medium line-through">
             {productData.sizes?.get(size)?.offer
-              ? `السعر قبل العرض : ${
-                  productData.sizes.get(size).offer
-                } SAR `
+              ? `السعر قبل العرض : ${productData.sizes.get(size).offer} SAR `
               : ""}
           </p>
           <p className="mt-5 text-3xl font-medium">
@@ -209,7 +213,9 @@ const Product = () => {
                         ? "border-orange-500 bg-blue-600"
                         : ""
                     } ${
-                      !isSauceSizeSelected ? "opacity-50 cursor-not-allowed" : ""
+                      !isSauceSizeSelected
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
                   >
                     {sauce}
@@ -239,10 +245,10 @@ const Product = () => {
       {/* Description & Reviews */}
       <div className="mt-20">
         <div className="flex">
-          <button className="border px-5 py-3 text-sm font-bold">
-            الوصف
+          <button className="border px-5 py-3 text-sm font-bold">الوصف</button>
+          <button className="border px-5 py-3 text-sm">
+            اراء العملاء (122)
           </button>
-          <button className="border px-5 py-3 text-sm">اراء العملاء (122)</button>
         </div>
         <div className="border px-6 py-6 text-sm text-gray-500 space-y-4">
           <p>

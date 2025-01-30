@@ -29,7 +29,7 @@ const Orders = () => {
             item["paymentMethod"] = order.paymentMethod;
             item["date"] = order.date;
             if (!item.image || item.image.length === 0) {
-              item["image"] = ["../assets/Knafe_on_a_plate.jpeg"]; // Fallback image
+              item["image"] = "../assets/Knafe_on_a_plate.jpeg"; // Change to string
             }
             allOrdersItem.push(item);
           });
@@ -59,7 +59,7 @@ const Orders = () => {
             <div className="flex items-start gap-6 text-sm">
               <img
                 className="w-16 sm:w-20"
-                src={item.image[0]}
+                src={item.image}
                 alt="imageProduct"
                 onError={(e) => {
                   e.target.src = "../assets/konafa_1.png";
