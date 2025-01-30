@@ -49,22 +49,27 @@ const List = ({ token }) => {
       formData.append("sizes", JSON.stringify(editProduct.sizes));
       formData.append("bestSeller", editProduct.bestSeller);
 
+      // Append new images if they exist
       if (editProduct.image1) formData.append("image1", editProduct.image1);
       if (editProduct.image2) formData.append("image2", editProduct.image2);
       if (editProduct.image3) formData.append("image3", editProduct.image3);
       if (editProduct.image4) formData.append("image4", editProduct.image4);
 
-      const response = await axios.post(backendUrl + "/api/product/update", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        backendUrl + "/api/product/update",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.data.success) {
         toast.success(response.data.message);
         setEditProduct(null);
-        fetchList();
+        fetchList(); // Refresh the product list
       } else {
         toast.error(response.data.message);
       }
@@ -130,18 +135,80 @@ const List = ({ token }) => {
               <input
                 type="text"
                 value={editProduct.name}
-                onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })}
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, name: e.target.value })
+                }
                 className="border p-2 w-full"
+                placeholder="Product Name"
               />
               <textarea
                 value={editProduct.description}
-                onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    description: e.target.value,
+                  })
+                }
                 className="border p-2 w-full"
+                placeholder="Product Description"
               />
-              <button type="submit" className="bg-green-500 text-white px-2 py-1 mt-2">
+              {/* Add inputs for sizes and prices */}
+              {Object.keys(editProduct.sizes).map((size) => (
+                <div key={size}>
+                  <label>{size} Price:</label>
+                  <input
+                    type="number"
+                    value={editProduct.sizes[size].price}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        sizes: {
+                          ...editProduct.sizes,
+                          [size]: {
+                            ...editProduct.sizes[size],
+                            price: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                    className="border p-2 w-full"
+                  />
+                </div>
+              ))}
+              {/* Add file inputs for images */}
+              <input
+                type="file"
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, image1: e.target.files[0] })
+                }
+              />
+              <input
+                type="file"
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, image2: e.target.files[0] })
+                }
+              />
+              <input
+                type="file"
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, image3: e.target.files[0] })
+                }
+              />
+              <input
+                type="file"
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, image4: e.target.files[0] })
+                }
+              />
+
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-2 py-1 mt-2"
+              >
                 Update
               </button>
               <button
+                type="button"
                 className="bg-gray-500 text-white px-2 py-1 mt-2 ml-2"
                 onClick={() => setEditProduct(null)}
               >
