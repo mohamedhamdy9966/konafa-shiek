@@ -7,7 +7,7 @@ const Login = ({ setToken }) => {
   const [currentState, setCurrentState] = useState("Login");
   const { navigate, backendUrl } = useContext(ShopContext);
   const [loading, setLoading] = useState(false);
-  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -92,11 +92,12 @@ const Login = ({ setToken }) => {
       if (currentState === "SignUp") {
         await handleSignUp();
       } else {
-        // First, check if the email matches the admin email
-        if (formData.email === adminEmail) {
-          await handleAdminLogin();
-        } else {
+        // Attempt user login first
+        try {
           await handleUserLogin();
+        } catch (userError) {
+          // If user login fails, attempt admin login
+          await handleAdminLogin();
         }
       }
     } catch (error) {
