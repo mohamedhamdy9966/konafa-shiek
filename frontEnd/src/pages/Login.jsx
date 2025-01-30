@@ -21,49 +21,64 @@ const Login = ({ setToken }) => {
   const handleUserLogin = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${backendUrl}/api/user/login`, {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        `${backendUrl}/api/user/login`,
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        { timeout: 10000 } // Add timeout
+      );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
         toast.success("Logged in successfully!");
         return true;
+      } else {
+        toast.error(response.data.message || "Login failed");
+        return false;
       }
     } catch (err) {
-      return false; // Indicate failure
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handleAdminLogin = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(`${backendUrl}/api/user/admin`, {
-        email: formData.email,
-        password: formData.password,
-      });
-      if (response.data.success) {
-        await handleSuccess(response.data, "/add");
-        toast.success("Admin logged in successfully!");
-        return true;
-      }
-    } catch (err) {
-      toast.error("Invalid credentials");
+      toast.error(err.response?.data?.message || "Login failed");
       return false;
     } finally {
       setLoading(false);
     }
   };
-  
+
+  const handleAdminLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/admin`,
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        { timeout: 10000 }
+      );
+      if (response.data.success) {
+        await handleSuccess(response.data, "/add");
+        toast.success("Admin logged in successfully!");
+        return true;
+      } else {
+        toast.error(response.data.message || "Admin login failed");
+        return false;
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Admin login failed");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignUp = async () => {
     setLoading(true);
     try {
       const response = await axios.post(
         `${backendUrl}/api/user/register`,
-        formData
+        formData,
+        { timeout: 10000 }
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
@@ -72,7 +87,7 @@ const Login = ({ setToken }) => {
         toast.error(response.data.message || "Sign-up failed");
       }
     } catch (err) {
-      toast.error(err.message || "Sign-up failed");
+      toast.error(err.response?.data?.message || "Sign-up failed");
     } finally {
       setLoading(false);
     }
@@ -84,21 +99,19 @@ const Login = ({ setToken }) => {
     localStorage.setItem("token", token);
     if (userId) localStorage.setItem("userId", userId);
     navigate(redirectPath);
-    window.location.reload();
+    // Removed window.location.reload() to prevent state issues
   };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     if (loading) return;
-  
+
     try {
       if (currentState === "SignUp") {
         await handleSignUp();
       } else {
-        // Attempt user login first
         const userLoginSuccess = await handleUserLogin();
         if (!userLoginSuccess) {
-          // If user login fails, attempt admin login
           await handleAdminLogin();
         }
       }
@@ -106,7 +119,6 @@ const Login = ({ setToken }) => {
       toast.error(error.message);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center w-full">
