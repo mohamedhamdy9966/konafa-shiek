@@ -137,35 +137,23 @@ const PlaceOrder = () => {
   };
 
   useEffect(() => {
-    if (!paymentReady || !moyasarConfig) return;
+    if (!paymentReady || !moyasarConfig) {
+      console.log("Moyasar config not ready:", { paymentReady, moyasarConfig });
+      return;
+    }
 
-    const initializeMoyasar = () => {
-      if (window.Moyasar) {
-        window.Moyasar.init({
-          element: ".mysr-form",
-          amount: moyasarConfig.amount * 100,
-          currency: "SAR",
-          description: `Order #${moyasarConfig.orderId}`,
-          publishable_api_key:
-            "pk_test_E4j6enesChywd2Po4Phx8UqSWp1cV87JsVXSWxnt",
-          callback_url: moyasarConfig.callbackUrl,
-          methods: ["creditcard"],
-        });
-      }
-    };
+    console.log("Initializing Moyasar Payment Form with:", moyasarConfig);
 
-    if (
-      !document.querySelector(
-        'script[src="https://cdn.moyasar.com/moyasar.js"]'
-      )
-    ) {
-      const script = document.createElement("script");
-      script.src = "https://cdn.moyasar.com/moyasar.js";
-      script.async = true;
-      script.onload = initializeMoyasar;
-      document.head.appendChild(script);
-    } else {
-      initializeMoyasar();
+    if (window.Moyasar) {
+      window.Moyasar.init({
+        element: ".mysr-form",
+        amount: moyasarConfig.amount * 100,
+        currency: "SAR",
+        description: `Order #${moyasarConfig.orderId}`,
+        publishable_api_key: "pk_test_E4j6enesChywd2Po4Phx8UqSWp1cV87JsVXSWxnt",
+        callback_url: moyasarConfig.callbackUrl,
+        methods: ["creditcard"],
+      });
     }
   }, [paymentReady, moyasarConfig]);
 
