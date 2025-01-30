@@ -111,7 +111,7 @@ const Login = ({ setToken }) => {
                 value={formData.name}
                 type="text"
                 className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-                placeholder="Name"
+                placeholder="إسمك باللغة الإنجليزية"
                 required
               />
             </div>
@@ -124,7 +124,7 @@ const Login = ({ setToken }) => {
               value={formData.email}
               type="email"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-              placeholder="Email"
+              placeholder="بريدك الإلكتروني"
               required
             />
           </div>
@@ -136,7 +136,7 @@ const Login = ({ setToken }) => {
               value={formData.password}
               type="password"
               className="rounded-md w-full px-3 py-2 border border-gray-300 outline-none"
-              placeholder="Password"
+              placeholder="كلمة السر الخاصة بك أكثر من 8 أرقم"
               required
             />
           </div>
