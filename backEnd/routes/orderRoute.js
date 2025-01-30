@@ -15,8 +15,6 @@ import {
 } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
-// orderRouter.js
-import { prepareOrder, processApplePay } from "../controllers/orderController";
 
 orderRouter.post("/prepare", authUser, prepareOrder);
 orderRouter.post("/applepay", authUser, processApplePay);
