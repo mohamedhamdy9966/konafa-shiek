@@ -142,22 +142,85 @@ const PlaceOrder = () => {
           }
           break;
         }
+        // PlaceOrder.js - Update the 'applepay' case in onSubmitHandler
         case "applepay": {
-          const responseApplePay = await axios.post(
-            backendUrl + "/api/order/moyasar",
-            {
-              ...orderData,
-              paymentSource: {
-                type: "applepay",
-              },
-            },
+          if (
+            typeof window === "undefined" ||
+            !window.ApplePaySession ||
+            !ApplePaySession.canMakePayments()
+          ) {
+            toast.error("Apple Pay is not available on this device");
+            return;
+          }
+
+          // Create order first to get order ID
+          const orderResponse = await axios.post(
+            backendUrl + "/api/order/prepare",
+            orderData,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          if (responseApplePay.data.success) {
-            window.location.replace(responseApplePay.data.payment_url);
-          } else {
-            toast.error(responseApplePay.data.message);
+
+          if (!orderResponse.data.success) {
+            toast.error("Failed to create order");
+            return;
           }
+
+          const { orderId, amount } = orderResponse.data;
+
+          const paymentRequest = {
+            countryCode: "SA",
+            currencyCode: "SAR",
+            total: {
+              label: `Order #${orderId}`,
+              amount: amount.toFixed(2),
+            },
+          };
+
+          const session = new ApplePaySession(3, paymentRequest);
+
+          session.onvalidatemerchant = async (event) => {
+            try {
+              const validationResponse = await axios.post(
+                `${backendUrl}/api/applepay/validate-merchant`,
+                {
+                  validationURL: event.validationURL,
+                  domainName: window.location.hostname, // Add domain name
+                }
+              );
+              session.completeMerchantValidation(validationResponse.data);
+            } catch (error) {
+              session.abort();
+              toast.error("Merchant validation failed");
+            }
+          };
+
+          session.onpaymentauthorized = async (event) => {
+            const paymentToken = event.payment.token;
+
+            try {
+              const paymentResponse = await axios.post(
+                backendUrl + "/api/order/applepay",
+                {
+                  orderId,
+                  paymentToken: JSON.stringify(paymentToken), // Send full token
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+
+              if (paymentResponse.data.success) {
+                session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                window.location.href = `${origin}/verify?success=true&orderId=${orderId}`;
+              } else {
+                session.completePayment(ApplePaySession.STATUS_FAILURE);
+                toast.error("Payment failed");
+              }
+            } catch (error) {
+              session.completePayment(ApplePaySession.STATUS_FAILURE);
+              toast.error(error.message);
+            }
+          };
+
+          session.begin();
           break;
         }
         default:

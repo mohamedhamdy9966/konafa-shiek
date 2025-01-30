@@ -9,9 +9,18 @@ import {
   allOrders,
   updateStatus,
   verifyMoyasarWebhook,
+  prepareOrder,
+  validateMerchant,
+  processApplePay,
 } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
+// orderRouter.js
+import { prepareOrder, processApplePay } from "../controllers/orderController";
+
+orderRouter.post("/prepare", authUser, prepareOrder);
+orderRouter.post("/applepay", authUser, processApplePay);
+orderRouter.post("/applepay/validate-merchant", validateMerchant);
 
 // Admin Routes
 orderRouter.get("/", adminAuth, allOrders); // Get all orders

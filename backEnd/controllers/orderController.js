@@ -102,6 +102,82 @@ const placeOrderMoyasar = async (req, res) => {
   }
 };
 
+// orderController.js
+const prepareOrder = async (req, res) => {
+  try {
+    const orderData = {
+      ...req.body,
+      paymentMethod: "applepay",
+      payment: false,
+    };
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+    res.json({ success: true, orderId: newOrder._id, amount: newOrder.amount });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const processApplePay = async (req, res) => {
+  try {
+    const { orderId, paymentToken } = req.body;
+    const order = await orderModel.findById(orderId);
+
+    const paymentResponse = await axios.post(
+      "https://api.moyasar.com/v1/payments",
+      {
+        amount: order.amount * 100,
+        currency: "SAR",
+        description: `Order ${orderId}`,
+        source: {
+          type: "applepay",
+          token: JSON.parse(paymentToken),
+        },
+      },
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            process.env.MOYASAR_SECRET_KEY + ":"
+          ).toString("base64")}`,
+        },
+      }
+    );
+
+    if (paymentResponse.data.status === "paid") {
+      await orderModel.findByIdAndUpdate(orderId, { payment: true });
+      res.json({ success: true });
+    } else {
+      await orderModel.findByIdAndDelete(orderId);
+      res.json({ success: false });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const validateMerchant = async (req, res) => {
+  try {
+    const response = await axios.post(
+      "https://api.moyasar.com/v1/applepay/validate",
+      {
+        validation_url: req.body.validationURL,
+        domain_name: "your-domain.com", // Replace with your domain
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${Buffer.from(
+            process.env.MOYASAR_SECRET_KEY + ":"
+          ).toString("base64")}`,
+        },
+      }
+    );
+    res.send(response.data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const verifyMoyasarWebhook = async (req, res) => {
   try {
     const { orderId, success, userId } = req.body;
@@ -203,4 +279,7 @@ export {
   userOrders,
   updateStatus,
   verifyMoyasarWebhook,
+  prepareOrder,
+  processApplePay,
+  validateMerchant,
 };
