@@ -62,7 +62,7 @@ const placeOrderMoyasar = async (req, res) => {
 
     // Create payment request with Moyasar
     const paymentResponse = await axios.post(
-      "https://api.moyasar.com/v1/payment-requests",
+      "https://api.moyasar.com/v1/payments",
       {
         amount: amount * 100,
         currency: "SAR",
@@ -71,6 +71,9 @@ const placeOrderMoyasar = async (req, res) => {
         metadata: {
           orderId: newOrder._id.toString(),
           userId: userId.toString(),
+        },
+        source: {
+          type: "creditcard",
         },
       },
       {
@@ -86,7 +89,7 @@ const placeOrderMoyasar = async (req, res) => {
     res.json({
       success: true,
       payment_url: paymentResponse.data.url,
-      orderId: newOrder._id, // Add this line
+      orderId: newOrder._id,
     });
   } catch (error) {
     console.error("Payment error:", error.response?.data || error);
@@ -101,27 +104,26 @@ const verifyMoyasarWebhook = async (req, res) => {
   try {
     // Get payment data from Moyasar webhook
     const { id, status, metadata } = req.body;
-    
+
     // Fetch full payment details
     const payment = await moyasar.payment.fetch(id);
 
-    if (payment.status === 'paid') {
-      await orderModel.findByIdAndUpdate(
-        metadata.orderId, 
-        { payment: true, status: "Payment Completed" }
-      );
+    if (payment.status === "paid") {
+      await orderModel.findByIdAndUpdate(metadata.orderId, {
+        payment: true,
+        status: "Payment Completed",
+      });
       return res.json({ success: true });
     }
-    
+
     // Handle failed payments
     await orderModel.findByIdAndDelete(metadata.orderId);
     return res.json({ success: false });
-
   } catch (error) {
     console.error("Payment verification error:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
-      message: "Payment verification failed"
+      message: "Payment verification failed",
     });
   }
 };
