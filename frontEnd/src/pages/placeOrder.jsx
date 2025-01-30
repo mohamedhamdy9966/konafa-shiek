@@ -340,7 +340,7 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                pay with moyasar
+                الدفع بالبطاقة
               </p>
             </div>
             <div
@@ -353,7 +353,7 @@ const PlaceOrder = () => {
                 }`}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                Pay with Apple Pay
+                Apple Pay
               </p>
             </div>
           </div>
@@ -369,15 +369,24 @@ const PlaceOrder = () => {
                 type="text"
                 placeholder="Cardholder Name"
               />
-              <input
-                required
-                onChange={handleCardChange}
-                name="number"
-                value={cardDetails.number}
-                className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
-                type="text"
-                placeholder="Card Number"
-              />
+              <div className="relative mb-3">
+                <input
+                  required
+                  onChange={handleCardChange}
+                  name="number"
+                  value={cardDetails.number}
+                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
+                  type="text"
+                  placeholder="Card Number"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                  <img
+                    src="../assets/moyasar-cards.png"
+                    className="w-auto h-auto"
+                    alt="cards"
+                  />
+                </div>
+              </div>
               <div className="flex gap-3">
                 <input
                   required
