@@ -49,6 +49,7 @@ const App = () => {
           setIsAdmin(decodedToken.isAdmin || false);
         } catch (error) {
           console.error("Error decoding token:", error);
+          localStorage.removeItem("token");
           setIsAdmin(false);
         }
       } else {
