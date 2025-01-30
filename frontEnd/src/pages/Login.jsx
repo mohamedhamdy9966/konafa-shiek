@@ -99,7 +99,7 @@ const Login = ({ setToken }) => {
     localStorage.setItem("token", token);
     if (userId) localStorage.setItem("userId", userId);
     navigate(redirectPath);
-    // Removed window.location.reload() to prevent state issues
+    window.location.reload();
   };
 
   const onSubmitHandler = async (event) => {
