@@ -1,4 +1,3 @@
-import menu_1 from "./konafa_1.png";
 import upload_area from "./upload_area.png"
 import logo from "./konafa_shiek_logo.png";
 import cart_icon from "./cart_icon.png";
@@ -22,7 +21,6 @@ import add_icon from './add_icon.png'
 import order_icon from './order_icon.png'
 
 export const assets = {
-  menu_1,
   add_icon,
   order_icon,
   upload_area,
