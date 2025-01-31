@@ -70,7 +70,7 @@ const App = () => {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          toast.error("برجاء تسجيل الدخول أ,لا  ", {
+          toast.error("برجاء تسجيل الدخول أولا  ", {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,

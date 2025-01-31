@@ -1,10 +1,11 @@
 import { useContext, useState, useEffect } from "react";
 import { assets } from "../assets/assets";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const location = useLocation();
   const {
     setShowSearch,
     getCartCount,
@@ -41,10 +42,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img 
-              src={assets.logo} 
-              className="w-16 rounded-sm transform transition-transform hover:scale-105" 
-              alt="logo" 
+            <img
+              src={assets.logo}
+              className="w-16 rounded-sm transform transition-transform hover:scale-105"
+              alt="logo"
             />
           </Link>
 
@@ -73,35 +74,46 @@ const Navbar = () => {
 
           {/* Right Icons */}
           <div className="flex items-center space-x-6">
-            <button 
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
-              onClick={() => setShowSearch(true)}
-            >
-              <img src={assets.search_icon} alt="search" className="w-5" />
-            </button>
+            {location.pathname === "/collection" && (
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                onClick={() => setShowSearch(true)}
+              >
+                <img src={assets.search_icon} alt="search" className="w-5" />
+              </button>
+            )}
 
             {/* Profile Menu */}
             <div className="relative group">
-              <button 
+              <button
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                 onClick={() => !token && navigate("/login")}
               >
                 <img src={assets.profile_icon} className="w-5" alt="profile" />
               </button>
-              
+
               {token && (
                 <div className="absolute right-0 w-48 mt-2 hidden group-hover:block">
                   <div className="bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1">
                     <div className="px-4 py-2 text-sm text-gray-500 border-b">
                       My Account
                     </div>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       My Profile
                     </a>
-                    <a onClick={() => navigate("/orders")} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    <a
+                      onClick={() => navigate("/orders")}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                    >
                       Orders
                     </a>
-                    <a onClick={handleLogout} className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer">
+                    <a
+                      onClick={handleLogout}
+                      className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer"
+                    >
                       Logout
                     </a>
                   </div>
@@ -110,7 +122,10 @@ const Navbar = () => {
             </div>
 
             {/* Cart Icon */}
-            <Link to="/cart" className="relative p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
+            <Link
+              to="/cart"
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            >
               <img src={assets.cart_icon} className="w-5" alt="cart" />
               {cartCount > 0 && (
                 <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -131,7 +146,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Sidebar */}
-      <div 
+      <div
         className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity z-40 ${
           menuVisible ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
@@ -141,7 +156,7 @@ const Navbar = () => {
           className={`fixed top-0 right-0 bottom-0 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
             menuVisible ? "translate-x-0" : "translate-x-full"
           }`}
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between p-4 border-b">
@@ -150,10 +165,14 @@ const Navbar = () => {
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                 onClick={() => setMenuVisible(false)}
               >
-                <img src={assets.dropdown_icon} alt="close" className="h-4 rotate-180" />
+                <img
+                  src={assets.dropdown_icon}
+                  alt="close"
+                  className="h-4 rotate-180"
+                />
               </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto">
               {navLinks.map(({ to, label }) => (
                 <NavLink
@@ -161,7 +180,11 @@ const Navbar = () => {
                   to={to}
                   className={({ isActive }) =>
                     `block px-4 py-3 text-sm font-medium transition-colors duration-200 border-b
-                    ${isActive ? "text-black bg-gray-50" : "text-gray-600 hover:bg-gray-50"}`
+                    ${
+                      isActive
+                        ? "text-black bg-gray-50"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }`
                   }
                   onClick={() => setMenuVisible(false)}
                 >
