@@ -5,6 +5,7 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -60,7 +61,7 @@ const PlaceOrder = () => {
       });
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 3500); // Increased to 3500ms to match toast duration
       return false;
     }
     return true;
@@ -68,16 +69,16 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      if (!checkAuthentication()) {
-        return;
-      }
-
-      console.log("Cart Items:", cartItems);
-      if (Object.keys(cartItems).length === 0) {
-        toast.error("Your cart is empty");
-        return;
-      }
+    if (Object.keys(cartItems).length === 0) {
+      toast.error("سلة التسوق فارغة، الرجاء إضافة منتجات أولاً", {
+        rtl: true,
+      });
+      return;
+    }
+  
+    if (!checkAuthentication()) {
+      return;
+    }
 
       let orderItems = [];
       for (const productId in cartItems) {
@@ -414,7 +415,18 @@ const PlaceOrder = () => {
           Checkout
         </button>
       </div>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </form>
   );
 };
