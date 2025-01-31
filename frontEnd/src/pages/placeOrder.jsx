@@ -5,6 +5,8 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -56,11 +58,11 @@ const PlaceOrder = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        rtl: true
+        rtl: true,
       });
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 3500); // Increased to 3500ms to match toast duration
       return false;
     }
     return true;
@@ -448,6 +450,18 @@ const PlaceOrder = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </form>
   );
 };
