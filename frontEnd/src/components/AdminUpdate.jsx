@@ -58,7 +58,7 @@ const EditProductForm = ({ product, onUpdate, onCancel, token, backendUrl }) => 
 
       onUpdate(submitData);
     } catch (error) {
-      toast.error('Error updating product: ' + error.message);
+      toast.error('حدث خطأ أثناء تحديث المنتج ' + error.message);
     }
   };
 

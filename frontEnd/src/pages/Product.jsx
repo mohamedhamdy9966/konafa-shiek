@@ -46,7 +46,7 @@ const Product = () => {
     const selectedSauceText = selectedSauce.length > 0 ? ` (${selectedSauce.join(', ')})` : '';
     
     toast.success(
-      `Added ${productData.name} - Size ${size}${sauceSizeText}${selectedSauceText} to cart!`,
+      `تم إضافة ${productData.name} - الحجم ${size}${sauceSizeText}${selectedSauceText} إلى عربة التسوق الخاصة بك!`,
       {
         position: "bottom-right",
         autoClose: 3000,

@@ -18,7 +18,7 @@ const ShopContextProvider = (props) => {
 
   const addToCart = async (itemId, size, sauceSize = 0, selectedSauce = []) => {
     if (!size) {
-      toast.error("Please Select Size");
+      toast.error("من فضلك إختر حجم أولا");
       return null;
     }
   
@@ -59,7 +59,7 @@ const ShopContextProvider = (props) => {
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) {
-          toast.error("User Not exist !");
+          toast.error("هذا المشترك غير موجود !");
           return;
         }
         await axios.post(
@@ -91,14 +91,14 @@ const ShopContextProvider = (props) => {
 
   const updateQuantity = async (itemId, size, quantity) => {
     if (!products) {
-      toast.error("Products are not yet loaded. Please try again.");
+      toast.error("المنتجات لم يتم تحميلها. برجاء المحاولة في وقت لاحق");
       return;
     }
 
     let cartData = JSON.parse(JSON.stringify(cartItems));
 
     if (!cartData[itemId] || !cartData[itemId][size]) {
-      toast.error("Item not found in cart");
+      toast.error("هذا المنتج لا يوجد في عربة التسوق");
       return;
     }
 
@@ -113,7 +113,7 @@ const ShopContextProvider = (props) => {
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) {
-          toast.error("User Not Found! Please Log In!");
+          toast.error("هذا المستخدم غير موجود ! من فضلك قم بتسجيل الدخول !");
           return;
         }
         await axios.put(
@@ -173,7 +173,7 @@ const ShopContextProvider = (props) => {
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) {
-        toast.error("User Not Logged In now !");
+        toast.error("هذا المستخدم لم يقم بتسجيل الدخول الان !");
         return;
       }
       const getUserCartResponse = await axios.get(
@@ -183,7 +183,7 @@ const ShopContextProvider = (props) => {
       if (getUserCartResponse.data.success) {
         setCartItems(getUserCartResponse.data.cartData || {});
       } else {
-        toast.error("Failed to fetch cart data");
+        toast.error("فشل في الحصول على بيانات عربة التسوق الخاصة بك");
       }
     } catch (error) {
       toast.error(error.message);

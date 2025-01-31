@@ -31,14 +31,14 @@ const Login = ({ setToken }) => {
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
-        toast.success("Logged in successfully!");
+        toast.success("تم تسجيل الدخول !");
         return true;
       } else {
-        toast.error(response.data.message || "Login failed");
+        toast.error(response.data.message || "فشل تسجيل الدخول");
         return false;
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || " فشل تسجيل الدخول إلى حسابك !");
       return false;
     } finally {
       setLoading(false);
@@ -58,14 +58,14 @@ const Login = ({ setToken }) => {
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/add");
-        toast.success("Admin logged in successfully!");
+        toast.success("تم تسجيل دخول المدير !");
         return true;
       } else {
-        toast.error(response.data.message || "Admin login failed");
+        toast.error(response.data.message || "فشل تسجيل دخول المدير !");
         return false;
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Admin login failed");
+      toast.error(err.response?.data?.message || "فشل تسجيل دخول مدير التطبيق !");
       return false;
     } finally {
       setLoading(false);
@@ -82,12 +82,12 @@ const Login = ({ setToken }) => {
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
-        toast.success("Account created successfully!");
+        toast.success("تم إنشاء حسابك بنجاح !");
       } else {
-        toast.error(response.data.message || "Sign-up failed");
+        toast.error(response.data.message || "حدث خطأ أثناء إنشاء حسابك !");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Sign-up failed");
+      toast.error(err.response?.data?.message || "فشل في تسجيل حسابك !");
     } finally {
       setLoading(false);
     }

@@ -13,12 +13,12 @@ const AdminAdd = ({ token }) => {
   const handleImageValidation = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!validTypes.includes(file.type)) {
-      toast.error("Invalid file type! Only JPEG, JPG, and PNG are allowed.");
+      toast.error("نوع الملف غير صالح! يُسمح فقط بملفات JPEG و JPG و PNG.");
       return false;
     }
     if (file.size > 2 * 1024 * 1024) {
       // 2MB limit
-      toast.error("File size exceeds 2MB!");
+      toast.error("الصورة يجب إلا تتخطي حجم 2 ميجا بايت !");
       return false;
     }
     return true;

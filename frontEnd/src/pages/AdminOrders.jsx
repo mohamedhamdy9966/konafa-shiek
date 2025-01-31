@@ -35,7 +35,7 @@ const AdminOrders = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (err) {
-      console.error("Error fetching orders:", err.message);
+      console.error("حدث خطأ أثناء تحميل الطلبات : ", err.message);
       setError(err.message);
       toast.error(err.message);
     } finally {
@@ -51,13 +51,13 @@ const AdminOrders = ({ token }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
-        toast.success("Status updated successfully");
+        toast.success("تم تحديث حالة الطلب بنجاح !");
         await fetchAllOrders();
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update status");
+      toast.error(error.response?.data?.message || "فشل في تحديث حالة الطلب !");
     }
   };
 

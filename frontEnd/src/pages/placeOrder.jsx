@@ -78,7 +78,7 @@ const PlaceOrder = () => {
 
       console.log("Cart Items:", cartItems);
       if (Object.keys(cartItems).length === 0) {
-        toast.error("Your cart is empty");
+        toast.error("عربة التسوق الخاصة بك فارغة الان ! ");
         return;
       }
 
@@ -171,7 +171,7 @@ const PlaceOrder = () => {
             !window.ApplePaySession ||
             !ApplePaySession.canMakePayments()
           ) {
-            toast.error("Apple Pay is not available on this device");
+            toast.error("لا يتوفر خاصية الدفع عن طريق أبل باي على هذا الجهاز");
             return;
           }
 
@@ -182,7 +182,7 @@ const PlaceOrder = () => {
           );
 
           if (!orderResponse.data.success) {
-            toast.error("Failed to create order");
+            toast.error("حدث فشل أثناء القيام بالطلب !");
             return;
           }
 
@@ -233,7 +233,7 @@ const PlaceOrder = () => {
                 window.location.href = `${origin}/verify?success=true&orderId=${orderId}`;
               } else {
                 session.completePayment(ApplePaySession.STATUS_FAILURE);
-                toast.error("Payment failed");
+                toast.error("لم يتم الدفع");
               }
             } catch (error) {
               session.completePayment(ApplePaySession.STATUS_FAILURE);

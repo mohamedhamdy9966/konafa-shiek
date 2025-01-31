@@ -11,7 +11,7 @@ import Product from "./pages/Product";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Verify";
 import AdminNavbar from "./components/AdminNavbar";
@@ -23,7 +23,6 @@ import { useState, useEffect } from "react";
 // import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { toast } from "react-toastify";
 
 const styles = `
 @keyframes spin {
