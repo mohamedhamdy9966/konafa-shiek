@@ -4,8 +4,7 @@ import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -57,11 +56,11 @@ const PlaceOrder = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        rtl: true,
+        rtl: true
       });
       setTimeout(() => {
         navigate("/login");
-      }, 3500); // Increased to 3500ms to match toast duration
+      }, 2000);
       return false;
     }
     return true;
@@ -69,16 +68,17 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    if (Object.keys(cartItems).length === 0) {
-      toast.error("سلة التسوق فارغة، الرجاء إضافة منتجات أولاً", {
-        rtl: true,
-      });
-      return;
-    }
-  
-    if (!checkAuthentication()) {
-      return;
-    }
+    try {
+      // Check authentication first
+      if (!checkAuthentication()) {
+        return;
+      }
+
+      console.log("Cart Items:", cartItems);
+      if (Object.keys(cartItems).length === 0) {
+        toast.error("Your cart is empty");
+        return;
+      }
 
       let orderItems = [];
       for (const productId in cartItems) {
@@ -255,20 +255,21 @@ const PlaceOrder = () => {
     <form
       autoComplete="true"
       onSubmit={onSubmitHandler}
-      className="border-t flex flex-col sm:flex-row justify-between gap-6 pt-6 sm:pt-12 min-h-[80vh] bg-gray-50 p-6 rounded-lg shadow-md"
+      className="border-t flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh]"
     >
-      {/* Left Side - User Details */}
-      <div className="flex flex-col gap-5 w-full sm:max-w-[480px] bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-3">
-          تفاصيل الدفع و الإستلام
-        </h2>
+      {/* Rest of the JSX remains exactly the same */}
+      {/* leftSide */}
+      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
+        <div className="text-xl sm:text-2xl my-3">
+          <Title text1={"تفاصيل"} text2={"الدفع و الإستلام"} />
+        </div>
         <div className="flex gap-3">
           <input
             required
             onChange={onChangeHandler}
             name="firstName"
             value={formData.firstName}
-            className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="الإسم الأول"
           />
@@ -277,7 +278,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="lastName"
             value={formData.lastName}
-            className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="الإسم الثاني"
           />
@@ -287,7 +288,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="email"
           value={formData.email}
-          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="email"
           placeholder="البريد الإلكتروني"
         />
@@ -296,93 +297,123 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="street"
           value={formData.street}
-          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="text"
           placeholder="العنوان"
         />
-        <select
-          required
-          onChange={onChangeHandler}
-          name="state"
-          value={formData.state}
-          className="border border-gray-300 rounded-md py-2 px-4 w-full cursor-pointer focus:ring-2 focus:ring-green-400"
-        >
-          <option disabled>إختر فرع التسليم الأقرب إليك</option>
-          <option>فرع البساتين</option>
-          <option>فرع الشمال</option>
-        </select>
+        <div className="flex gap-3 flex-col">
+          <select
+            required
+            onChange={onChangeHandler}
+            name="state"
+            value={formData.state}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full cursor-pointer"
+          >
+            <option disabled className="cursor-pointer">
+              {" "}
+              إختر فرع التسليم الأقرب إليك
+            </option>
+            <option className="cursor-pointer"> فرع البساتين</option>
+            <option className="cursor-pointer"> فرع الشمال</option>
+          </select>
+        </div>
+        <div className="flex gap-3"></div>
         <input
           required
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
-          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           type="number"
           placeholder="رقم الجوال"
         />
       </div>
-
-      {/* Right Side - Payment */}
-      <div className="flex flex-col gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+      {/* RightSide */}
+      <div className="mt-8">
+        <div className="mt-8 min-w-80">
           <CartTotal />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-            طريقة الدفع
-          </h2>
-          <div className="flex flex-col lg:flex-row gap-3">
-            {["COD", "moyasar", "applepay"].map((methodType) => (
-              <div
-                key={methodType}
-                onClick={() => setMethod(methodType)}
-                className={`flex items-center gap-3 border p-3 cursor-pointer rounded-md ${
-                  method === methodType ? "border-green-400" : "border-gray-300"
+        <div className="mt-12">
+          <Title text1={"Payment"} text2={"Method"} />
+          {/* Payment Method Selection */}
+          <div className="flex gap-3 flex-col lg:flex-row">
+            <div
+              onClick={() => setMethod("COD")}
+              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "COD" ? "bg-green-400" : ""
                 }`}
-              >
-                <span
-                  className={`w-4 h-4 border rounded-full flex items-center justify-center ${
-                    method === methodType ? "bg-green-400" : ""
-                  }`}
-                ></span>
-                <p className="text-gray-700 font-medium">
-                  {methodType === "COD"
-                    ? "الدفع عند الإستلام"
-                    : methodType === "moyasar"
-                    ? "الدفع بالبطاقة"
-                    : "Apple Pay"}
-                </p>
-              </div>
-            ))}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                الدفع عند الإستلام
+              </p>
+            </div>
+            <div
+              onClick={() => setMethod("moyasar")}
+              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "moyasar" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                الدفع بالبطاقة
+              </p>
+            </div>
+            <div
+              onClick={() => setMethod("applepay")}
+              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border rounded-full ${
+                  method === "applepay" ? "bg-green-400" : ""
+                }`}
+              ></p>
+              <p className="text-gray-500 text-sm font-medium mx-4">
+                Apple Pay
+              </p>
+            </div>
           </div>
           {method === "moyasar" && (
-            <div className="mt-6 p-4 border rounded-md bg-gray-50">
+            <div className="mt-6 p-4 border rounded-md">
               <h3 className="text-lg font-medium mb-3">Enter Card Details</h3>
               <input
                 required
                 onChange={handleCardChange}
                 name="name"
                 value={cardDetails.name}
-                className="border border-gray-300 rounded-md py-2 px-4 w-full mb-3 focus:ring-2 focus:ring-green-400"
+                className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
                 type="text"
                 placeholder="Cardholder Name"
               />
-              <input
-                required
-                onChange={handleCardChange}
-                name="number"
-                value={cardDetails.number}
-                className="border border-gray-300 rounded-md py-2 px-4 w-full mb-3 focus:ring-2 focus:ring-green-400"
-                type="text"
-                placeholder="Card Number"
-              />
+              <div className="relative mb-3">
+                <input
+                  required
+                  onChange={handleCardChange}
+                  name="number"
+                  value={cardDetails.number}
+                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
+                  type="text"
+                  placeholder="Card Number"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                  <img
+                    src={assets.moyasar_cards}
+                    className="w-auto h-auto"
+                    alt="cards"
+                  />
+                </div>
+              </div>
               <div className="flex gap-3">
                 <input
                   required
                   onChange={handleCardChange}
                   name="cvc"
                   value={cardDetails.cvc}
-                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
                   type="text"
                   placeholder="CVC"
                 />
@@ -391,7 +422,7 @@ const PlaceOrder = () => {
                   onChange={handleCardChange}
                   name="month"
                   value={cardDetails.month}
-                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
                   type="text"
                   placeholder="MM"
                 />
@@ -400,33 +431,23 @@ const PlaceOrder = () => {
                   onChange={handleCardChange}
                   name="year"
                   value={cardDetails.year}
-                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
+                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
                   type="text"
                   placeholder="YYYY"
                 />
               </div>
             </div>
           )}
+          <div className="w-full text-end mt-8">
+            <button
+              type="submit"
+              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
+            >
+              <h2> checkout </h2>
+            </button>
+          </div>
         </div>
-        <button
-          type="submit"
-          className="bg-green-600 hover:bg-green-700 transition text-white px-12 py-3 text-lg rounded-md shadow-md font-semibold"
-        >
-          Checkout
-        </button>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </form>
   );
 };
