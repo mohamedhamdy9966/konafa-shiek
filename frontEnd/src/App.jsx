@@ -22,6 +22,8 @@ import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
 // import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const styles = `
 @keyframes spin {
@@ -62,6 +64,33 @@ const App = () => {
     return () => clearTimeout(timeout);
   }, [token]);
 
+  // Add axios interceptor in your ShopContext or main App component
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          toast.error("برجاء تسجيل الدخول أ,لا  ", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            rtl: true,
+          });
+          localStorage.removeItem("userId");
+          localStorage.removeItem("token");
+          setTimeout(() => Navigate("/login"), 3500);
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axios.interceptors.response.eject(interceptor);
+  }, [Navigate]);
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
@@ -90,7 +119,7 @@ const App = () => {
                   path="/add"
                   element={
                     // <ProtectedRoute>
-                      <AdminAdd token={token} />
+                    <AdminAdd token={token} />
                     // </ProtectedRoute>
                   }
                 />
@@ -98,7 +127,7 @@ const App = () => {
                   path="/list"
                   element={
                     // <ProtectedRoute>
-                      <AdminList token={token} />
+                    <AdminList token={token} />
                     // </ProtectedRoute>
                   }
                 />
@@ -106,7 +135,7 @@ const App = () => {
                   path="/konafaOrders"
                   element={
                     // <ProtectedRoute>
-                      <AdminOrders token={token} />
+                    <AdminOrders token={token} />
                     // </ProtectedRoute>
                   }
                 />
