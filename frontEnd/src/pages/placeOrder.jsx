@@ -4,7 +4,7 @@ import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -254,21 +254,20 @@ const PlaceOrder = () => {
     <form
       autoComplete="true"
       onSubmit={onSubmitHandler}
-      className="border-t flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh]"
+      className="border-t flex flex-col sm:flex-row justify-between gap-6 pt-6 sm:pt-12 min-h-[80vh] bg-gray-50 p-6 rounded-lg shadow-md"
     >
-      {/* Rest of the JSX remains exactly the same */}
-      {/* leftSide */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
-        <div className="text-xl sm:text-2xl my-3">
-          <Title text1={"تفاصيل"} text2={"الدفع و الإستلام"} />
-        </div>
+      {/* Left Side - User Details */}
+      <div className="flex flex-col gap-5 w-full sm:max-w-[480px] bg-white p-6 rounded-lg shadow-sm">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+          تفاصيل الدفع و الإستلام
+        </h2>
         <div className="flex gap-3">
           <input
             required
             onChange={onChangeHandler}
             name="firstName"
             value={formData.firstName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
             type="text"
             placeholder="الإسم الأول"
           />
@@ -277,7 +276,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="lastName"
             value={formData.lastName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
             type="text"
             placeholder="الإسم الثاني"
           />
@@ -287,7 +286,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="email"
           value={formData.email}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
           type="email"
           placeholder="البريد الإلكتروني"
         />
@@ -296,123 +295,93 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="street"
           value={formData.street}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
           type="text"
           placeholder="العنوان"
         />
-        <div className="flex gap-3 flex-col">
-          <select
-            required
-            onChange={onChangeHandler}
-            name="state"
-            value={formData.state}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full cursor-pointer"
-          >
-            <option disabled className="cursor-pointer">
-              {" "}
-              إختر فرع التسليم الأقرب إليك
-            </option>
-            <option className="cursor-pointer"> فرع البساتين</option>
-            <option className="cursor-pointer"> فرع الشمال</option>
-          </select>
-        </div>
-        <div className="flex gap-3"></div>
+        <select
+          required
+          onChange={onChangeHandler}
+          name="state"
+          value={formData.state}
+          className="border border-gray-300 rounded-md py-2 px-4 w-full cursor-pointer focus:ring-2 focus:ring-green-400"
+        >
+          <option disabled>إختر فرع التسليم الأقرب إليك</option>
+          <option>فرع البساتين</option>
+          <option>فرع الشمال</option>
+        </select>
         <input
           required
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
           type="number"
           placeholder="رقم الجوال"
         />
       </div>
-      {/* RightSide */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
+
+      {/* Right Side - Payment */}
+      <div className="flex flex-col gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
           <CartTotal />
         </div>
-        <div className="mt-12">
-          <Title text1={"Payment"} text2={"Method"} />
-          {/* Payment Method Selection */}
-          <div className="flex gap-3 flex-col lg:flex-row">
-            <div
-              onClick={() => setMethod("COD")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "COD" ? "bg-green-400" : ""
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            طريقة الدفع
+          </h2>
+          <div className="flex flex-col lg:flex-row gap-3">
+            {["COD", "moyasar", "applepay"].map((methodType) => (
+              <div
+                key={methodType}
+                onClick={() => setMethod(methodType)}
+                className={`flex items-center gap-3 border p-3 cursor-pointer rounded-md ${
+                  method === methodType ? "border-green-400" : "border-gray-300"
                 }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                الدفع عند الإستلام
-              </p>
-            </div>
-            <div
-              onClick={() => setMethod("moyasar")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "moyasar" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                الدفع بالبطاقة
-              </p>
-            </div>
-            <div
-              onClick={() => setMethod("applepay")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "applepay" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                Apple Pay
-              </p>
-            </div>
+              >
+                <span
+                  className={`w-4 h-4 border rounded-full flex items-center justify-center ${
+                    method === methodType ? "bg-green-400" : ""
+                  }`}
+                ></span>
+                <p className="text-gray-700 font-medium">
+                  {methodType === "COD"
+                    ? "الدفع عند الإستلام"
+                    : methodType === "moyasar"
+                    ? "الدفع بالبطاقة"
+                    : "Apple Pay"}
+                </p>
+              </div>
+            ))}
           </div>
           {method === "moyasar" && (
-            <div className="mt-6 p-4 border rounded-md">
+            <div className="mt-6 p-4 border rounded-md bg-gray-50">
               <h3 className="text-lg font-medium mb-3">Enter Card Details</h3>
               <input
                 required
                 onChange={handleCardChange}
                 name="name"
                 value={cardDetails.name}
-                className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
+                className="border border-gray-300 rounded-md py-2 px-4 w-full mb-3 focus:ring-2 focus:ring-green-400"
                 type="text"
                 placeholder="Cardholder Name"
               />
-              <div className="relative mb-3">
-                <input
-                  required
-                  onChange={handleCardChange}
-                  name="number"
-                  value={cardDetails.number}
-                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full mb-3"
-                  type="text"
-                  placeholder="Card Number"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
-                  <img
-                    src={assets.moyasar_cards}
-                    className="w-auto h-auto"
-                    alt="cards"
-                  />
-                </div>
-              </div>
+              <input
+                required
+                onChange={handleCardChange}
+                name="number"
+                value={cardDetails.number}
+                className="border border-gray-300 rounded-md py-2 px-4 w-full mb-3 focus:ring-2 focus:ring-green-400"
+                type="text"
+                placeholder="Card Number"
+              />
               <div className="flex gap-3">
                 <input
                   required
                   onChange={handleCardChange}
                   name="cvc"
                   value={cardDetails.cvc}
-                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
                   type="text"
                   placeholder="CVC"
                 />
@@ -421,7 +390,7 @@ const PlaceOrder = () => {
                   onChange={handleCardChange}
                   name="month"
                   value={cardDetails.month}
-                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
                   type="text"
                   placeholder="MM"
                 />
@@ -430,23 +399,22 @@ const PlaceOrder = () => {
                   onChange={handleCardChange}
                   name="year"
                   value={cardDetails.year}
-                  className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+                  className="border border-gray-300 rounded-md py-2 px-4 w-full focus:ring-2 focus:ring-green-400"
                   type="text"
                   placeholder="YYYY"
                 />
               </div>
             </div>
           )}
-          <div className="w-full text-end mt-8">
-            <button
-              type="submit"
-              className="bg-black text-white px-16 py-3 text-sm rounded-sm"
-            >
-              <h2> checkout </h2>
-            </button>
-          </div>
         </div>
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 transition text-white px-12 py-3 text-lg rounded-md shadow-md font-semibold"
+        >
+          Checkout
+        </button>
       </div>
+      <ToastContainer />
     </form>
   );
 };
