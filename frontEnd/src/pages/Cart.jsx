@@ -3,7 +3,8 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
 
 const Cart = () => {
@@ -254,6 +255,7 @@ const Cart = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };
