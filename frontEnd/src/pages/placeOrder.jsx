@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CartTotal from "../components/CartTotal";
@@ -24,21 +24,23 @@ const validationSchema = Yup.object({
   method: Yup.string().required("طريقة الدفع مطلوبة"),
   cardDetails: Yup.object().when("method", {
     is: "moyasar",
-    then: Yup.object({
-      name: Yup.string().required("اسم صاحب البطاقة مطلوب"),
-      number: Yup.string()
-        .matches(/^\d{16}$/, "رقم البطاقة يجب أن يكون 16 أرقام")
-        .required("رقم البطاقة مطلوب"),
-      cvc: Yup.string()
-        .matches(/^\d{3}$/, "CVC يجب أن يكون 3 أرقام")
-        .required("CVC مطلوب"),
-      month: Yup.string()
-        .matches(/^(0[1-9]|1[0-2])$/, "الشهر غير صالح")
-        .required("الشهر مطلوب"),
-      year: Yup.string()
-        .matches(/^\d{4}$/, "السنة يجب أن تكون 4 أرقام")
-        .required("السنة مطلوبة"),
-    }),
+    then: () =>
+      Yup.object({
+        name: Yup.string().required("اسم صاحب البطاقة مطلوب"),
+        number: Yup.string()
+          .matches(/^\d{16}$/, "رقم البطاقة يجب أن يكون 16 أرقام")
+          .required("رقم البطاقة مطلوب"),
+        cvc: Yup.string()
+          .matches(/^\d{3}$/, "CVC يجب أن يكون 3 أرقام")
+          .required("CVC مطلوب"),
+        month: Yup.string()
+          .matches(/^(0[1-9]|1[0-2])$/, "الشهر غير صالح")
+          .required("الشهر مطلوب"),
+        year: Yup.string()
+          .matches(/^\d{4}$/, "السنة يجب أن تكون 4 أرقام")
+          .required("السنة مطلوبة"),
+      }).required("تفاصيل البطاقة مطلوبة"),
+    otherwise: () => Yup.object().strip(),
   }),
 });
 
@@ -409,7 +411,7 @@ const PlaceOrder = () => {
                 }`}
               ></div>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                الدفع بالبطاقة
+                pay with card
               </p>
             </div>
             <div
