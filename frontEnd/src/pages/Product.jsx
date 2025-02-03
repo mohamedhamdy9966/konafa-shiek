@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import { ShopContext } from "../context/ShopContext";
@@ -40,11 +40,12 @@ const Product = () => {
 
   const handleAddToCart = () => {
     addToCart(productData._id, size, sauceSize, selectedSauce);
-    
+
     // Create toast message with product details
-    const sauceSizeText = sauceSize ? ` with ${sauceSize} sauce` : '';
-    const selectedSauceText = selectedSauce.length > 0 ? ` (${selectedSauce.join(', ')})` : '';
-    
+    const sauceSizeText = sauceSize ? ` with ${sauceSize} sauce` : "";
+    const selectedSauceText =
+      selectedSauce.length > 0 ? ` (${selectedSauce.join(", ")})` : "";
+
     toast.success(
       `تم إضافة ${productData.name} - الحجم ${size}${sauceSizeText}${selectedSauceText} إلى عربة التسوق الخاصة بك!`,
       {
@@ -196,57 +197,61 @@ const Product = () => {
               })}
             </div>
           </div>
-          <div className="mt-4">
-            <p className="mb-2">Sauce size :</p>
-            <div className="flex gap-2 flex-col">
-              {[4, 5, 10, 15].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => handleSauceSizeClick(size)}
-                  className={`rounded-xl border py-2 px-4 bg-gray-100 ${
-                    sauceSize === size ? "border-orange-500" : ""
-                  }`}
-                >
-                  {size === 4
-                    ? "XS"
-                    : size === 5
-                    ? "S"
-                    : size === 10
-                    ? "M"
-                    : "L"}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4">
-              <p className="mb-2">Sauce type:</p>
-              <div className="flex gap-2 flex-col">
-                {[
-                  "kinder",
-                  "pistachio",
-                  "nutella",
-                  "white-chocolate",
-                  "blue-berry",
-                ].map((sauce) => (
-                  <button
-                    key={sauce}
-                    onClick={() => handleSauceTypeToggle(sauce)}
-                    disabled={!isSauceSizeSelected}
-                    className={`rounded-full border py-2 px-4 bg-gray-300 ${
-                      selectedSauce.includes(sauce)
-                        ? "border-orange-500 bg-blue-600"
-                        : ""
-                    } ${
-                      !isSauceSizeSelected
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    {sauce}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          {productData.category === "BentElShn"
+            ? ""
+            : `${(
+                <div className="mt-4">
+                  <p className="mb-2">Sauce size :</p>
+                  <div className="flex gap-2 flex-col">
+                    {[4, 5, 10, 15].map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => handleSauceSizeClick(size)}
+                        className={`rounded-xl border py-2 px-4 bg-gray-100 ${
+                          sauceSize === size ? "border-orange-500" : ""
+                        }`}
+                      >
+                        {size === 4
+                          ? "XS"
+                          : size === 5
+                          ? "S"
+                          : size === 10
+                          ? "M"
+                          : "L"}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-4">
+                    <p className="mb-2">Sauce type:</p>
+                    <div className="flex gap-2 flex-col">
+                      {[
+                        "kinder",
+                        "pistachio",
+                        "nutella",
+                        "white-chocolate",
+                        "blue-berry",
+                      ].map((sauce) => (
+                        <button
+                          key={sauce}
+                          onClick={() => handleSauceTypeToggle(sauce)}
+                          disabled={!isSauceSizeSelected}
+                          className={`rounded-full border py-2 px-4 bg-gray-300 ${
+                            selectedSauce.includes(sauce)
+                              ? "border-orange-500 bg-blue-600"
+                              : ""
+                          } ${
+                            !isSauceSizeSelected
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                        >
+                          {sauce}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}`}
           <button
             onClick={handleAddToCart}
             disabled={!size}
