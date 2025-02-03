@@ -64,6 +64,13 @@ const Slider = () => {
         </div>
         <div className="p-4">
           <img
+            src={assets.slider_9}
+            alt="Item 3"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
             src={assets.slider_6}
             alt="Item 3"
             className="w-full h-auto"

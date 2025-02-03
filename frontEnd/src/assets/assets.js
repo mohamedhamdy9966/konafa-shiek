@@ -28,6 +28,7 @@ import slider_5 from "./kunafa-sheek-slider-5.jfif";
 import slider_6 from "./kunafa-sheek-slider-6.jfif";
 import slider_7 from "./kunafa-sheek-slider-7.jfif";
 import slider_8 from "./kunafa-sheek-slider-8.jfif";
+import slider_9 from "./kunafa-sheek-slider-9.webp";
 
 export const assets = {
   add_icon,
@@ -39,6 +40,7 @@ export const assets = {
   slider_6,
   slider_7,
   slider_8,
+  slider_9,
   moyasar_cards,
   order_icon,
   upload_area,
