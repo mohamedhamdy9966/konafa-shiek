@@ -1,5 +1,5 @@
 import upload_area from "./upload_area.png";
-import moyasar_cards from "./moyasar-cards.png"
+import moyasar_cards from "./moyasar-cards.png";
 import logo from "./konafa_shiek_logo.png";
 import cart_icon from "./cart_icon.png";
 import bin_icon from "./bin_icon.png";
@@ -18,17 +18,27 @@ import contact_img from "./contact_img.webp";
 import stripe_logo from "./stripe_logo.png";
 import cross_icon from "./cross_icon.png";
 import paytabs_logo from "./paytabs_logo.png";
-import add_icon from './add_icon.png'
-import order_icon from './order_icon.png'
-import slider_1 from "./kunafa-sheek-slider-1.jfif"
-import slider_2 from "./kunafa-sheek-slider-2.jfif"
-import slider_3 from "./kunafa-sheek-slider-3.jfif"
+import add_icon from "./add_icon.png";
+import order_icon from "./order_icon.png";
+import slider_1 from "./kunafa-sheek-slider-1.jfif";
+import slider_2 from "./kunafa-sheek-slider-2.jfif";
+import slider_3 from "./kunafa-sheek-slider-3.jfif";
+import slider_4 from "./kunafa-sheek-slider-4.jfif";
+import slider_5 from "./kunafa-sheek-slider-5.jfif";
+import slider_6 from "./kunafa-sheek-slider-6.jfif";
+import slider_7 from "./kunafa-sheek-slider-7.jfif";
+import slider_8 from "./kunafa-sheek-slider-8.jfif";
 
 export const assets = {
   add_icon,
   slider_1,
   slider_2,
   slider_3,
+  slider_4,
+  slider_5,
+  slider_6,
+  slider_7,
+  slider_8,
   moyasar_cards,
   order_icon,
   upload_area,

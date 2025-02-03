@@ -43,8 +43,29 @@ const Slider = () => {
       >
         <div className="p-4">
           <img
-            src={assets.slider_1}
-            alt="Item 1"
+            src={assets.slider_4}
+            alt="Item 3"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
+            src={assets.slider_3}
+            alt="Item 3"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
+            src={assets.slider_5}
+            alt="Item 3"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
+            src={assets.slider_6}
+            alt="Item 3"
             className="w-full h-auto"
           />
         </div>
@@ -57,7 +78,21 @@ const Slider = () => {
         </div>
         <div className="p-4">
           <img
-            src={assets.slider_3}
+            src={assets.slider_7}
+            alt="Item 3"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
+            src={assets.slider_1}
+            alt="Item 1"
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="p-4">
+          <img
+            src={assets.slider_8}
             alt="Item 3"
             className="w-full h-auto"
           />
