@@ -19,7 +19,7 @@ const validationSchema = Yup.object({
   street: Yup.string().required("العنوان مطلوب"),
   state: Yup.string().required("الفرع مطلوب"),
   phone: Yup.string()
-    .matches(/^05\d{2}$/, "رقم الجوال يجب أن يبدأ بـ 05 ويحتوي على 10 أرقام")
+    .matches(/^05\d{8}$/, "رقم الجوال يجب أن يبدأ بـ 05 ويحتوي على 10 أرقام")
     .required("رقم الجوال مطلوب"),
   method: Yup.string().required("طريقة الدفع مطلوبة"),
   cardDetails: Yup.object().when("method", {

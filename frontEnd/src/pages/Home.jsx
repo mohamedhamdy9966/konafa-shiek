@@ -4,6 +4,7 @@ import LatestCollection from "../components/LatestCollection";
 import MainContent from "../components/MainContent";
 import NewsLetterBox from "../components/NewsLetterBox";
 import OurPolicy from "../components/OurPolicy";
+import Slider from "../components/Slider";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ const Home = () => {
       ) : (
         <>
           <MainContent />
+          <Slider/>
           <LatestCollection />
           <BestSeller />
           <OurPolicy />

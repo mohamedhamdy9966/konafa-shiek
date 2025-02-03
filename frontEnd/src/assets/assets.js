@@ -20,9 +20,15 @@ import cross_icon from "./cross_icon.png";
 import paytabs_logo from "./paytabs_logo.png";
 import add_icon from './add_icon.png'
 import order_icon from './order_icon.png'
+import slider_1 from "./kunafa-sheek-slider-1.jfif"
+import slider_2 from "./kunafa-sheek-slider-2.jfif"
+import slider_3 from "./kunafa-sheek-slider-3.jfif"
 
 export const assets = {
   add_icon,
+  slider_1,
+  slider_2,
+  slider_3,
   moyasar_cards,
   order_icon,
   upload_area,
