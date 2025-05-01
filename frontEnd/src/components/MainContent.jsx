@@ -17,7 +17,7 @@ const MainContent = () => {
           </h2>
           {/* Shop Now Section */}
           <div className="flex items-center gap-2 hover:cursor-pointer hover:text-gray-800 transition">
-            <p className="font-semibold text-sm md:text-base">أعلى جودة و أفضل سعر</p>
+            <p className="font-semibold text-sm md:text-base">أحلى طعم و أفضل سعر</p>
             <span className="w-8 md:w-11 h-[1px] bg-[#414141]"></span>
           </div>
         </div>

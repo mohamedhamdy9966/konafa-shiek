@@ -13,7 +13,7 @@ const LatestCollection = () => {
     setTimeout(() => {
       setLatestProducts(products.slice(0, 5));
       setLoading(false);
-    }, 15000); 
+    }, 1000); 
   }, [products]);
 
   return (

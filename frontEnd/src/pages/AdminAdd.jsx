@@ -245,7 +245,8 @@ const AdminAdd = ({ token }) => {
           >
             <option value="Konafa">كنافة</option>
             <option value="BentElShn">بنت الصحن</option>
-            <option value="KonafaMini">كنافة ميني</option>
+            <option value="KonafaMiniPlain">كنافة ميني</option>
+            <option value="KonafaMiniSauce">كنافة ميني صوصات</option>
             <option value="KonafaShiek">كنافة شيك</option>
           </select>
         </div>{" "}

@@ -273,7 +273,7 @@ const PlaceOrder = () => {
       });
       setTimeout(() => {
         navigate("/login");
-      }, 3500);
+      }, 1000);
       return false;
     }
     return true;

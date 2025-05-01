@@ -20,9 +20,10 @@ import AdminAdd from "./pages/AdminAdd";
 import AdminList from "./pages/AdminList";
 import AdminOrders from "./pages/AdminOrders";
 import { useState, useEffect } from "react";
-// import ProtectedRoute from "./components/ProtectedRoute";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import usePullToRefresh from "./context/usePullToRefresh";
+import { useNavigate } from "react-router-dom";
 
 const styles = `
 @keyframes spin {
@@ -40,6 +41,7 @@ const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeApp = () => {
@@ -59,7 +61,7 @@ const App = () => {
     };
 
     // Add slight delay for smooth transition
-    const timeout = setTimeout(initializeApp, 300);
+    const timeout = setTimeout(initializeApp, 100);
     return () => clearTimeout(timeout);
   }, [token]);
 
@@ -81,7 +83,7 @@ const App = () => {
           });
           localStorage.removeItem("userId");
           localStorage.removeItem("token");
-          setTimeout(() => Navigate("/login"), 3500);
+          setTimeout(() => navigate("/login"), 1000);
         }
         return Promise.reject(error);
       }
@@ -89,7 +91,7 @@ const App = () => {
 
     return () => axios.interceptors.response.eject(interceptor);
   }, [Navigate]);
-
+  usePullToRefresh();
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">

@@ -99,7 +99,7 @@ const Collection = () => {
         >
           <p className="mb-3 text-sm font-medium">Categories</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            {["Konafa", "BentElShn", "KonafaMini", "KonafaShiek"].map(
+            {["Konafa", "BentElShn", "KonafaMiniPlain", "KonafaMiniSauce" , "KonafaShiek"].map(
               (categoryName) => (
                 <p key={categoryName} className="flex gap-2">
                   <input
