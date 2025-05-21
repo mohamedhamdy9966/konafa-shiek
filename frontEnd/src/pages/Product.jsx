@@ -231,6 +231,7 @@ const Product = () => {
           ) : (
             <div className="mt-4">
               <p className="mb-2">حجم الصوص : </p>
+              <span className="text-xs text-red-400">برجاء إختيار حجم صوص مناسب مع حجم الكنافة</span>
               <div className="flex gap-2 flex-col">
                 {[4, 5, 10, 15].map((size) => (
                   <button

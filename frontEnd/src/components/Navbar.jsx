@@ -34,6 +34,7 @@ const Navbar = () => {
     { to: "/collection", label: "الأصناف" },
     { to: "/about", label: "عن كنافة شيك" },
     { to: "/contact", label: "تواصل معنا" },
+    { to: "/privacy-policy", label: "سياسة الخصوصية" },
   ];
 
   return (

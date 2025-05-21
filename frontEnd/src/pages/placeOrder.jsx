@@ -411,7 +411,7 @@ const PlaceOrder = () => {
                 }`}
               ></div>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                pay with card
+                pay with card  (متاحة  قريبا )
               </p>
             </div>
             <div
@@ -424,7 +424,7 @@ const PlaceOrder = () => {
                 }`}
               ></div>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                Apple Pay
+                Apple Pay (متاحة  قريبا  )
               </p>
             </div>
           </div>
@@ -433,7 +433,6 @@ const PlaceOrder = () => {
         {formik.values.method === "moyasar" && (
           <div className="mt-6 p-4 border rounded-md">
             <h3 className="text-lg font-medium mb-3">تفاصيل البطاقة</h3>
-
             <div className="mb-3">
               <input
                 name="cardDetails.name"

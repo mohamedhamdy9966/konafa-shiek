@@ -5,6 +5,7 @@ import MainContent from "../components/MainContent";
 import NewsLetterBox from "../components/NewsLetterBox";
 import OurPolicy from "../components/OurPolicy";
 import Slider from "../components/Slider";
+import CollectionShortCut from "../components/CollectionsShortCut";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const Home = () => {
         <>
           <MainContent />
           <Slider/>
+          <CollectionShortCut/>
           <LatestCollection />
           <BestSeller />
           <OurPolicy />
