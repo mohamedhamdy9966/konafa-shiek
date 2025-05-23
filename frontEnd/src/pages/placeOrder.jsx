@@ -374,8 +374,14 @@ const PlaceOrder = () => {
           <input
             name="phone"
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="number"
+            type="text"
             placeholder="رقم الجوال"
+            maxLength={10}
+            onInput={(e) => {
+              e.target.value = e.target.value
+                .replace(/[^0-9]/g, "")
+                .slice(0, 10);
+            }}
             {...formik.getFieldProps("phone")}
           />
           {formik.touched.phone && formik.errors.phone && (
@@ -411,7 +417,7 @@ const PlaceOrder = () => {
                 }`}
               ></div>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                pay with card  (متاحة  قريبا )
+                pay with card (متاحة قريبا )
               </p>
             </div>
             <div
@@ -424,7 +430,7 @@ const PlaceOrder = () => {
                 }`}
               ></div>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                Apple Pay (متاحة  قريبا  )
+                Apple Pay (متاحة قريبا )
               </p>
             </div>
           </div>
