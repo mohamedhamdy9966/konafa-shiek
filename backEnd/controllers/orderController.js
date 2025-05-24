@@ -28,6 +28,7 @@ const placeOrder = async (req, res) => {
       items,
       address,
       amount,
+      deliveryMethod,
       paymentMethod: "COD",
       payment: false,
       date: Date.now(),
@@ -58,6 +59,7 @@ const placeOrderMoyasar = async (req, res) => {
       items,
       address,
       amount,
+      deliveryMethod,
       paymentMethod: paymentSource.type, // Store the payment type
       payment: false,
       date: Date.now(),
@@ -107,6 +109,7 @@ const prepareOrder = async (req, res) => {
   try {
     const orderData = {
       ...req.body,
+      deliveryMethod: req.body.deliveryMethod,
       paymentMethod: "applepay",
       payment: false,
     };

@@ -113,6 +113,11 @@ const AdminOrders = ({ token }) => {
               </div>
               <p>{order.address.state}</p>
               <p>{order.address.phone}</p>
+              <p>
+                {order.deliveryMethod === "delivery"
+                  ? "توصيل"
+                  : "استلام من الفرع"}
+              </p>
             </div>
             <div>
               <p className="text-sm sm:text-[15px]">

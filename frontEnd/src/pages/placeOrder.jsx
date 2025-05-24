@@ -21,6 +21,9 @@ const validationSchema = Yup.object({
   phone: Yup.string()
     .matches(/^05\d{8}$/, "رقم الجوال يجب أن يبدأ بـ 05 ويحتوي على 10 أرقام")
     .required("رقم الجوال مطلوب"),
+  deliveryMethod: Yup.string()
+    .required("طريقة التوصيل مطلوبة")
+    .oneOf(["delivery", "branch"], "طريقة توصيل غير صالحة"),
   method: Yup.string().required("طريقة الدفع مطلوبة"),
   cardDetails: Yup.object().when("method", {
     is: "moyasar",
@@ -65,6 +68,7 @@ const PlaceOrder = () => {
       state: "",
       phone: "",
       method: "COD",
+      deliveryMethod: "delivery",
       cardDetails: {
         name: "",
         number: "",
@@ -127,10 +131,12 @@ const PlaceOrder = () => {
             phone: values.phone,
           },
           items: orderItems,
-          amount: getCartAmount() + delivery_fee,
+          amount:
+            getCartAmount() +
+            (formik.values.deliveryMethod === "delivery" ? delivery_fee : 0),
+          deliveryMethod: values.deliveryMethod,
           paymentMethod: values.method,
         };
-
         switch (values.method) {
           case "COD": {
             const response = await axios.post(
@@ -542,7 +548,13 @@ const PlaceOrder = () => {
       {/* Right Side */}
       <div className="mt-8">
         <div className="mt-8 min-w-80">
-          <CartTotal />
+          <CartTotal
+            deliveryOption={formik.values.deliveryMethod}
+            setDeliveryOption={(value) => {
+              formik.setFieldValue("deliveryMethod", value); // التحديث المباشر
+              formik.setFieldTouched("deliveryMethod", true); // إضافة هذه السطر
+            }}
+          />
         </div>
       </div>
 
