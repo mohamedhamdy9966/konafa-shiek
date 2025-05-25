@@ -21,7 +21,7 @@ const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
 
 const placeOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address } = req.body;
+    const { userId, items, amount, address, deliveryMethod } = req.body;
     console.log("Items being saved:", items);
     const orderData = {
       userId,
@@ -45,7 +45,7 @@ const placeOrder = async (req, res) => {
 
 const placeOrderMoyasar = async (req, res) => {
   try {
-    const { userId, amount, items, address, paymentSource } = req.body; // Accept paymentSource from frontend
+    const { userId, amount, items, address, paymentSource, deliveryMethod } = req.body; // Accept paymentSource from frontend
     const { origin } = req.headers;
 
     if (!userId || !amount || !items || !address || !origin || !paymentSource) {

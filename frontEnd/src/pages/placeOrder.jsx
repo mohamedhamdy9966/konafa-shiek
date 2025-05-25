@@ -120,6 +120,7 @@ const PlaceOrder = () => {
         }
 
         const userId = localStorage.getItem("userId") || token?.userId || "";
+        console.log("Submitting with deliveryMethod:", values.deliveryMethod);
         let orderData = {
           userId,
           address: {
