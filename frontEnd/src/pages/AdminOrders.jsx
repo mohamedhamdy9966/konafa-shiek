@@ -5,6 +5,8 @@ import { backendUrl, currency } from "../App";
 import parcel from "../assets/parcel_icon.svg";
 import { io } from "socket.io-client";
 import notificationSound from "../assets/notification.wav";
+const socketServerUrl = "https://konafa-shiek-notify.onrender.com";
+
 
 const AdminOrders = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -62,7 +64,7 @@ const AdminOrders = ({ token }) => {
   useEffect(() => {
     if (!token) return;
 
-    const newSocket = io(backendUrl, {
+    const newSocket = io(socketServerUrl, {
       auth: { token },
       transports: ["websocket"],
       reconnection: true,
