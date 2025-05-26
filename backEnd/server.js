@@ -25,7 +25,6 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
-// ✅ Middlewares
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://kunafasheek.com"],
@@ -36,21 +35,17 @@ app.use(
 
 app.use(express.json());
 
-// ✅ API routes
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-// ✅ Simple home route for test
 app.get("/", (req, res) => {
   res.send("API WORKING");
 });
 
-// ✅ Socket.IO auth middleware
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-
   if (!token) {
     return next(new Error("No token provided"));
   }
@@ -58,7 +53,6 @@ io.use((socket, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Optional: store info in socket.user
     socket.user = decoded;
 
     if (!decoded.isAdmin) {
@@ -82,3 +76,4 @@ io.on("connection", (socket) => {
 server.listen(port, () => {
   console.log(`✅ Server running on port ${port}`);
 });
+export { io };
