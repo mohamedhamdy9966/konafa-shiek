@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
   //   status: "Order Placed",
   //   paymentMethod: "COD",
   //   payment: false,
-  });
+  // });
 
   socket.on("disconnect", () => {
     console.log("Admin disconnected:", socket.id);
