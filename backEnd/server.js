@@ -26,7 +26,14 @@ connectDB();
 connectCloudinary();
 
 // ✅ Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://kunafasheek.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // ✅ API routes
