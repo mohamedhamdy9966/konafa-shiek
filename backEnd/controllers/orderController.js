@@ -37,15 +37,16 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
 
     // Socket notification with error handling
-    await axios
-      .post(
-        "https://konafa-shiek-notify.onrender.com/trigger-new-order",
-        { order: newOrder.toObject() },
-        { headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` } }
-      )
-      .catch((error) => {
-        console.error("Socket notification failed:", error.message);
-      });
+    await axios.post(
+      "https://konafa-shiek-notify.onrender.com/trigger-new-order",
+      {
+        order: {
+          ...newOrder.toObject(),
+          date: newOrder.date.toISOString(), // Convert Date to string
+        },
+      },
+      { headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` } }
+    );
 
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed" });
