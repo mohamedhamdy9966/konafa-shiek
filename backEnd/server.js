@@ -9,77 +9,69 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import jwt from "jsonwebtoken";
 
-// app config
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
+    origin: ["https://kunafasheek.com", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
+
 const port = process.env.PORT || 4000;
+
 connectDB();
 connectCloudinary();
 
-// middlewares
-app.use(express.json());
+// ✅ Middlewares
 app.use(cors());
+app.use(express.json());
 
-// api endpoints
+// ✅ API routes
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-// Socket.io authentication middleware
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (verifyToken(token)) {
-    return next();
-  }
-  return next(new Error("Authentication error"));
-});
-
-io.on("connection", (socket) => {
-  console.log("Admin connected:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("Admin disconnected:", socket.id);
-  });
-});
-
+// ✅ Simple home route for test
 app.get("/", (req, res) => {
   res.send("API WORKING");
 });
-import http from "http";
-import { Server } from "socket.io";
 
-// بعد إنشاء تطبيق Express
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*", // اضبط هنا رابط الفرونت إند
-    methods: ["GET", "POST"],
-  },
-});
-
-// Socket.io authentication middleware
+// ✅ Socket.IO auth middleware
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  if (verifyToken(token)) {
-    // قم بتنفيذ دالة التحقق من التوكن
-    return next();
+
+  if (!token) {
+    return next(new Error("No token provided"));
   }
-  return next(new Error("Authentication error"));
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Optional: store info in socket.user
+    socket.user = decoded;
+
+    if (!decoded.isAdmin) {
+      return next(new Error("Not authorized as admin"));
+    }
+
+    next();
+  } catch (err) {
+    console.error("Socket Auth Error:", err.message);
+    return next(new Error("Invalid or expired token"));
+  }
 });
 
 io.on("connection", (socket) => {
   console.log("Admin connected:", socket.id);
-
   socket.on("disconnect", () => {
     console.log("Admin disconnected:", socket.id);
   });
 });
 
-server.listen(port, () => console.log("Server started on Port :" + port));
+server.listen(port, () => {
+  console.log(`✅ Server running on port ${port}`);
+});
