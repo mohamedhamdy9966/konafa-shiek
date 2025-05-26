@@ -25,7 +25,7 @@ const AdminOrders = ({ token }) => {
     try {
       const response = await axios.get(`${backendUrl}/api/order`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 100 }, // Increase limit or implement pagination
+        params: { limit: 100 },
       });
       if (response.data.success) {
         setOrders(response.data.orders);
@@ -61,7 +61,6 @@ const AdminOrders = ({ token }) => {
     }
   };
 
-  // Fetch orders on token change
   useEffect(() => {
     fetchAllOrders();
   }, [token]);
@@ -74,7 +73,6 @@ const AdminOrders = ({ token }) => {
 
     return () => {
       audioInstance.pause();
-      // audioInstance.remove() is not standard, so skip
     };
   }, []);
 
@@ -119,7 +117,7 @@ const AdminOrders = ({ token }) => {
     };
   }, [token]);
 
-  // Handle new orders socket event
+  // Handle new order socket event
   useEffect(() => {
     if (!socket) return;
 
@@ -171,7 +169,6 @@ const AdminOrders = ({ token }) => {
 
       <h3 className="text-lg font-bold mb-4">الطلبات الواردة</h3>
 
-      {/* Add to your component */}
       <button
         onClick={fetchAllOrders}
         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -181,7 +178,21 @@ const AdminOrders = ({ token }) => {
 
       {!audioEnabled && (
         <button
-          onClick={() => setAudioEnabled(true)}
+          onClick={() => {
+            setAudioEnabled(true);
+            if (audio) {
+              audio
+                .play()
+                .then(() => {
+                  toast.success("تم تفعيل إشعارات الصوت!");
+                })
+                .catch((err) => {
+                  console.error("Failed to play sound:", err);
+                  toast.error("يرجى السماح بتشغيل الصوت في المتصفح");
+                  setAudioEnabled(false);
+                });
+            }
+          }}
           className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
         >
           تفعيل إشعارات الصوت 🔔
