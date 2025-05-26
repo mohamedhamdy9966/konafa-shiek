@@ -5,8 +5,8 @@ import { backendUrl, currency } from "../App";
 import parcel from "../assets/parcel_icon.svg";
 import { io } from "socket.io-client";
 import notificationSound from "../assets/notification.wav";
-const socketServerUrl = "https://konafa-shiek-notify.onrender.com";
 
+const socketServerUrl = "https://konafa-shiek-notify.onrender.com";
 
 const AdminOrders = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -14,7 +14,9 @@ const AdminOrders = ({ token }) => {
   const [error, setError] = useState(null);
   const [socket, setSocket] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audio, setAudio] = useState(null);
 
+  // Fetch all orders
   const fetchAllOrders = async () => {
     if (!token) return;
 
@@ -23,6 +25,7 @@ const AdminOrders = ({ token }) => {
     try {
       const response = await axios.get(`${backendUrl}/api/order`, {
         headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 100 }, // Increase limit or implement pagination
       });
       if (response.data.success) {
         setOrders(response.data.orders);
@@ -31,7 +34,7 @@ const AdminOrders = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (err) {
-      console.error("حدث خطأ أثناء تحميل الطلبات:", err.message);
+      console.error("Error loading orders:", err.message);
       setError(err.message);
       toast.error(err.message);
     } finally {
@@ -39,6 +42,7 @@ const AdminOrders = ({ token }) => {
     }
   };
 
+  // Handle order status change
   const statusHandler = async (event, orderId) => {
     try {
       const response = await axios.put(
@@ -57,10 +61,24 @@ const AdminOrders = ({ token }) => {
     }
   };
 
+  // Fetch orders on token change
   useEffect(() => {
     fetchAllOrders();
   }, [token]);
 
+  // Preload audio once
+  useEffect(() => {
+    const audioInstance = new Audio(notificationSound);
+    audioInstance.load();
+    setAudio(audioInstance);
+
+    return () => {
+      audioInstance.pause();
+      // audioInstance.remove() is not standard, so skip
+    };
+  }, []);
+
+  // Initialize socket once
   useEffect(() => {
     if (!token) return;
 
@@ -68,29 +86,52 @@ const AdminOrders = ({ token }) => {
       auth: { token },
       transports: ["websocket"],
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 3000,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      randomizationFactor: 0.5,
+      timeout: 20000,
+    });
+
+    newSocket.on("connect", () => {
+      console.log("Socket connected");
+    });
+
+    newSocket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+      if (reason === "io server disconnect") {
+        newSocket.connect();
+      }
     });
 
     newSocket.on("connect_error", (err) => {
       console.error("Connection Error:", err.message);
-      toast.error("فشل في الاتصال بالخادم!");
+      toast.error("فشل في الاتصال بالخادم! جاري إعادة المحاولة...");
     });
 
     setSocket(newSocket);
 
     return () => {
+      newSocket.off("connect");
+      newSocket.off("disconnect");
+      newSocket.off("connect_error");
       newSocket.close();
     };
   }, [token]);
 
+  // Handle new orders socket event
   useEffect(() => {
     if (!socket) return;
 
     const handleNewOrder = (order) => {
-      if (audioEnabled) {
-        const audio = new Audio(notificationSound);
-        audio.play().catch((err) => console.error("فشل تشغيل الصوت:", err));
+      if (audioEnabled && audio) {
+        audio.play().catch((err) => {
+          console.error("فشل تشغيل الصوت:", err);
+          setAudioEnabled(false);
+          toast.info("الرجاء تفعيل الصوت للإشعارات", {
+            onClick: () => setAudioEnabled(true),
+          });
+        });
       }
 
       toast.info(`طلب جديد من ${order.address.firstName}`, {
@@ -109,7 +150,7 @@ const AdminOrders = ({ token }) => {
     return () => {
       socket.off("new_order", handleNewOrder);
     };
-  }, [socket, audioEnabled]);
+  }, [socket, audioEnabled, audio]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -130,6 +171,14 @@ const AdminOrders = ({ token }) => {
 
       <h3 className="text-lg font-bold mb-4">الطلبات الواردة</h3>
 
+      {/* Add to your component */}
+      <button
+        onClick={fetchAllOrders}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        تحديث الطلبات
+      </button>
+
       {!audioEnabled && (
         <button
           onClick={() => setAudioEnabled(true)}
@@ -140,10 +189,10 @@ const AdminOrders = ({ token }) => {
       )}
 
       <div>
-        {orders.map((order, index) => (
+        {orders.map((order) => (
           <div
             className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-gray-700"
-            key={index}
+            key={order._id}
           >
             <img className="w-12" src={parcel} alt="parcel" />
             <div>
