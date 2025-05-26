@@ -3,7 +3,6 @@ import userModel from "../models/userModel.js";
 import axios from "axios";
 import Joi from "joi";
 import Moyasar from "moyasar";
-import { io } from '../socket-server/server.js';
 
 // Define the schema for updating the order status
 const updateStatusSchema = Joi.object({
@@ -23,7 +22,6 @@ const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address, deliveryMethod } = req.body;
-    console.log("Items being saved:", items);
     const orderData = {
       userId,
       items,
@@ -34,20 +32,36 @@ const placeOrder = async (req, res) => {
       payment: false,
       date: Date.now(),
     };
+
     const newOrder = new orderModel(orderData);
     await newOrder.save();
-    io.emit('new_order', newOrder);
-    await userModel.findByIdAndUpdate(userId, { cartData: {} }); // Clear user cart
+
+    // Socket notification with error handling
+    await axios
+      .post(
+        "https://konafa-shiek-notify.onrender.com/trigger-new-order",
+        { order: newOrder.toObject() },
+        { headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` } }
+      )
+      .catch((error) => {
+        console.error("Socket notification failed:", error.message);
+      });
+
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Order placement error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 const placeOrderMoyasar = async (req, res) => {
   try {
-    const { userId, amount, items, address, paymentSource, deliveryMethod } = req.body; // Accept paymentSource from frontend
+    const { userId, amount, items, address, paymentSource, deliveryMethod } =
+      req.body; // Accept paymentSource from frontend
     const { origin } = req.headers;
 
     if (!userId || !amount || !items || !address || !origin || !paymentSource) {

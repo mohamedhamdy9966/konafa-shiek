@@ -122,6 +122,7 @@ const AdminOrders = ({ token }) => {
     if (!socket) return;
 
     const handleNewOrder = (order) => {
+      console.log("New order received:", order);
       if (audioEnabled && audio) {
         audio.play().catch((err) => {
           console.error("فشل تشغيل الصوت:", err);
@@ -138,7 +139,10 @@ const AdminOrders = ({ token }) => {
       });
 
       setOrders((prev) => {
-        const exists = prev.some((o) => o._id === order._id);
+        // Convert both IDs to strings for comparison
+        const exists = prev.some(
+          (o) => o._id.toString() === order._id.toString()
+        );
         return exists ? prev : [order, ...prev];
       });
     };

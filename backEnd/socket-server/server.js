@@ -4,6 +4,29 @@ import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import axios from "axios";
+
+// Add this before your socket.io initialization
+app.use(express.json());
+
+// Add this endpoint
+app.post("/trigger-new-order", async (req, res) => {
+  try {
+    const { order } = req.body;
+
+    // Verify the request is from your Vercel backend
+    if (req.headers.authorization !== `Bearer ${process.env.SOCKET_SECRET}`) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Emit to all connected admin clients
+    io.emit("new_order", order);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error triggering new order:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 dotenv.config();
 
@@ -13,6 +36,7 @@ const io = new Server(server, {
   cors: {
     origin: ["https://kunafasheek.com", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   },
 });
 
