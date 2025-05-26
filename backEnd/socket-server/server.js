@@ -64,22 +64,22 @@ io.on("connection", (socket) => {
   console.log("Admin connected:", socket.id);
 
   // Just for test - can be triggered from your Vercel backend
-  socket.emit("new_order", {
-    _id: Date.now(),
-    address: {
-      firstName: "Test",
-      lastName: "Order",
-      street: "",
-      phone: "",
-      state: "",
-    },
-    amount: 10,
-    deliveryMethod: "delivery",
-    items: [],
-    date: new Date(),
-    status: "Order Placed",
-    paymentMethod: "COD",
-    payment: false,
+  // socket.emit("new_order", {
+  //   _id: Date.now(),
+  //   address: {
+  //     firstName: "Test",
+  //     lastName: "Order",
+  //     street: "",
+  //     phone: "",
+  //     state: "",
+  //   },
+  //   amount: 10,
+  //   deliveryMethod: "delivery",
+  //   items: [],
+  //   date: new Date(),
+  //   status: "Order Placed",
+  //   paymentMethod: "COD",
+  //   payment: false,
   });
 
   socket.on("disconnect", () => {
