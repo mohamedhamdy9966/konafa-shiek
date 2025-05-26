@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import axios from "axios";
 import Joi from "joi";
 import Moyasar from "moyasar";
+import { io } from '../server.js';
 
 // Define the schema for updating the order status
 const updateStatusSchema = Joi.object({
@@ -35,6 +36,7 @@ const placeOrder = async (req, res) => {
     };
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    io.emit('new_order', newOrder);
     await userModel.findByIdAndUpdate(userId, { cartData: {} }); // Clear user cart
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
