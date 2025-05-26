@@ -66,3 +66,4 @@ io.on("connection", (socket) => {
 server.listen(port, () => {
   console.log(`✅ Socket.IO server running on port ${port}`);
 });
+export { io };

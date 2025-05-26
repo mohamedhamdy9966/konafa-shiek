@@ -3,7 +3,7 @@ import userModel from "../models/userModel.js";
 import axios from "axios";
 import Joi from "joi";
 import Moyasar from "moyasar";
-import { io } from '../server.js';
+import { io } from '../socket-server/server.js';
 
 // Define the schema for updating the order status
 const updateStatusSchema = Joi.object({
