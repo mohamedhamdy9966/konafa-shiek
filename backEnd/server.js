@@ -19,7 +19,12 @@ connectCloudinary();
 // CORS setup
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://kunafasheek.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://kunafasheek.com",
+      "capacitor://localhost",
+      "http://localhost",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
