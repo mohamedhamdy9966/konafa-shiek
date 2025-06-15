@@ -17,6 +17,7 @@ connectDB();
 connectCloudinary();
 
 // Update CORS origin list
+// Update CORS origin list
 app.use(
   cors({
     origin: [
@@ -26,9 +27,9 @@ app.use(
       "https://com.konafasheek.app",
       "capacitor://localhost",
       "http://localhost",
-      "capacitor://*", // Allow all Capacitor origins
-      "http://10.0.2.2*", // Android emulator
-      "http://192.168.*", // Local network
+      "http://10.0.2.2*", 
+      "http://192.168.*",
+      "android-app://com.konafasheek.app" // ADD THIS LINE
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
