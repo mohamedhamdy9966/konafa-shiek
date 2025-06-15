@@ -2,5 +2,9 @@
   "appId": "com.konafasheek.app",
   "appName": "Konafa-Sheek",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "server": {
+    "hostname": "kunafasheek.com",
+    "androidScheme": "https"
+  }
 }
