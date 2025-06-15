@@ -6,5 +6,11 @@
   "server": {
     "hostname": "kunafasheek.com",
     "androidScheme": "https"
-  }
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  },
+  "scheme": "konafasheek"
 }
