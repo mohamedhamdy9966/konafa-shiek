@@ -34,7 +34,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://kunafasheek.com", "http://localhost:5173"],
+    origin: [
+      "https://kunafasheek.com",
+      "http://localhost:5173",
+      "capacitor://localhost", // for mobile apps
+      "http://localhost", // also useful for Android emulator
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
