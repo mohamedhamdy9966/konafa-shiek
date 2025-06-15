@@ -23,6 +23,7 @@ app.use(
       "http://localhost:5173",
       "https://kunafasheek.com",
       "https://com.kunafasheek.app",
+      "https://com.konafasheek.app",
       "capacitor://localhost",
       "http://localhost",
       "capacitor://*", // Allow all Capacitor origins
