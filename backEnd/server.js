@@ -23,13 +23,14 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://kunafasheek.com",
-      "https://com.kunafasheek.app",
-      "https://com.konafasheek.app",
       "capacitor://localhost",
       "http://localhost",
-      "http://10.0.2.2*", 
+      "http://10.0.2.2",
       "http://192.168.*",
-      "android-app://com.konafasheek.app" // ADD THIS LINE
+      "android-app://com.konafasheek.app", // Required for native Android app
+      "https://com.konafasheek.app", // Optional fallback
+      "https://com.kunafasheek.app", // Optional typo protection
+      "https://*.kunafasheek.com", // Optional if using subdomains
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,

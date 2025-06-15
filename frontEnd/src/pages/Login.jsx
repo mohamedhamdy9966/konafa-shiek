@@ -27,7 +27,7 @@ const Login = ({ setToken }) => {
           email: formData.email,
           password: formData.password,
         },
-        { timeout: 10000 } // Add timeout
+        { timeout: 10000, withCredentials: true } // Add timeout
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
@@ -38,7 +38,9 @@ const Login = ({ setToken }) => {
         return false;
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || " فشل تسجيل الدخول إلى حسابك !");
+      toast.error(
+        err.response?.data?.message || " فشل تسجيل الدخول إلى حسابك !"
+      );
       return false;
     } finally {
       setLoading(false);
@@ -54,7 +56,7 @@ const Login = ({ setToken }) => {
           email: formData.email,
           password: formData.password,
         },
-        { timeout: 10000 }
+        { timeout: 10000, withCredentials: true }
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/add");
@@ -65,7 +67,9 @@ const Login = ({ setToken }) => {
         return false;
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "فشل تسجيل دخول مدير التطبيق !");
+      toast.error(
+        err.response?.data?.message || "فشل تسجيل دخول مدير التطبيق !"
+      );
       return false;
     } finally {
       setLoading(false);
@@ -78,7 +82,7 @@ const Login = ({ setToken }) => {
       const response = await axios.post(
         `${backendUrl}/api/user/register`,
         formData,
-        { timeout: 10000 }
+        { timeout: 10000, withCredentials: true }
       );
       if (response.data.success) {
         await handleSuccess(response.data, "/");
