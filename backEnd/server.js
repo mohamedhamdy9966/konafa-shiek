@@ -16,43 +16,35 @@ const app = express();
 connectDB();
 connectCloudinary();
 
-// Update CORS origin list
+// CORS setup
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://kunafasheek.com",
-      "capacitor://localhost",
-      "http://localhost",
-      "http://10.0.2.2",
-      "http://192.168.*",
-      "android-app://com.konafasheek.app",
-      "https://com.konafasheek.app",
-      "https://com.kunafasheek.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: (origin, callback) => {
+      callback(null, true); // Allow all origins (use only in dev)
+    },
     credentials: true,
   })
 );
 
+
 // Parse JSON requests
 app.use(express.json());
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-//   );
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, PUT, DELETE, OPTIONS"
-//   );
-//   res.setHeader("Access-Control-Allow-Credentials", "true");
-//   if (req.method === "OPTIONS") {
-//     return res.status(200).end();
-//   }
-//   next();
-// });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
 
 // API Routes
 app.use("/api/user", userRouter);
