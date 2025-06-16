@@ -17,7 +17,6 @@ connectDB();
 connectCloudinary();
 
 // Update CORS origin list
-// Update CORS origin list
 app.use(
   cors({
     origin: [
@@ -27,10 +26,9 @@ app.use(
       "http://localhost",
       "http://10.0.2.2",
       "http://192.168.*",
-      "android-app://com.konafasheek.app", // Required for native Android app
-      "https://com.konafasheek.app", // Optional fallback
-      "https://com.kunafasheek.app", // Optional typo protection
-      "https://*.kunafasheek.com", // Optional if using subdomains
+      "android-app://com.konafasheek.app",
+      "https://com.konafasheek.app",
+      "https://com.kunafasheek.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
