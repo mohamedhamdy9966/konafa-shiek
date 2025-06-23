@@ -25,9 +25,9 @@ const placeOrder = async (req, res) => {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "User ID missing in request"
+        message: "User ID missing in request",
       });
-    };
+    }
     const { items, amount, address, deliveryMethod } = req.body;
     const orderData = {
       userId,
@@ -45,7 +45,7 @@ const placeOrder = async (req, res) => {
 
     // Socket notification with error handling
     await axios.post(
-      "https://konafa-shiek-notify.onrender.com/trigger-new-order",
+      "https://konafa-shiek-backend-test.vercel.app",
       {
         order: {
           ...newOrder.toObject(),
