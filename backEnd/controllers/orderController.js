@@ -21,7 +21,14 @@ const moyasar = new Moyasar(process.env.MOYASAR_SECRET_KEY);
 
 const placeOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address, deliveryMethod } = req.body;
+    const userId = req.userId; // Get from authenticated request
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID missing in request"
+      });
+    };
+    const { items, amount, address, deliveryMethod } = req.body;
     const orderData = {
       userId,
       items,

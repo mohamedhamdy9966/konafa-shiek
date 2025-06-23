@@ -199,7 +199,13 @@ const ShopContextProvider = (props) => {
       getUserCart(localStorage.getItem("token"));
     }
   }, [token]);
-
+  // Add this useEffect to sync token on every render
+useEffect(() => {
+  const storedToken = localStorage.getItem("token");
+  if (storedToken && storedToken !== token) {
+    setToken(storedToken);
+  }
+}, [token]);
   // to fetch cart on token change
   useEffect(() => {
     if (token) {

@@ -26,7 +26,6 @@ app.use(
   })
 );
 
-
 // Parse JSON requests
 app.use(express.json());
 app.use((req, res, next) => {

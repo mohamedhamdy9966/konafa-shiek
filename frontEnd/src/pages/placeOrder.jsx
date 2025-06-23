@@ -85,6 +85,13 @@ const PlaceOrder = () => {
           return;
         }
 
+        const tokenToUse = token || localStorage.getItem("token");
+        if (!tokenToUse) {
+          toast.error("Session expired. Please login again");
+          navigate("/login");
+          return;
+        }
+
         if (Object.keys(cartItems).length === 0) {
           toast.error("عربة التسوق الخاصة بك فارغة الان ! ");
           setSubmitting(false);
@@ -119,10 +126,8 @@ const PlaceOrder = () => {
           }
         }
 
-        const userId = localStorage.getItem("userId") || token?.userId || "";
         console.log("Submitting with deliveryMethod:", values.deliveryMethod);
         let orderData = {
-          userId,
           address: {
             firstName: values.firstName,
             lastName: values.lastName,
@@ -143,7 +148,7 @@ const PlaceOrder = () => {
             const response = await axios.post(
               backendUrl + "/api/order/place",
               orderData,
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${tokenToUse}` } , 'Content-Type': 'application/json' }
             );
             if (response.data.success) {
               setCartItems({});
@@ -163,7 +168,7 @@ const PlaceOrder = () => {
                   ...values.cardDetails,
                 },
               },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${tokenToUse}` }, 'Content-Type': 'application/json' }
             );
             if (responseMoyasar.data.success) {
               window.location.replace(responseMoyasar.data.payment_url);
@@ -187,7 +192,7 @@ const PlaceOrder = () => {
             const orderResponse = await axios.post(
               backendUrl + "/api/order/prepare",
               orderData,
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${tokenToUse}` }, 'Content-Type': 'application/json' }
             );
 
             if (!orderResponse.data.success) {
@@ -234,7 +239,7 @@ const PlaceOrder = () => {
                     orderId,
                     paymentToken: JSON.stringify(paymentToken),
                   },
-                  { headers: { Authorization: `Bearer ${token}` } }
+                  { headers: { Authorization: `Bearer ${tokenToUse}` }, 'Content-Type': 'application/json' }
                 );
 
                 if (paymentResponse.data.success) {
