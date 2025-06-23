@@ -44,24 +44,33 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
 
     // Socket notification with error handling
-    await axios.post(
-      "https://konafa-shiek-backend-test.vercel.app",
-      {
-        order: {
-          ...newOrder.toObject(),
-          date: newOrder.date.toISOString(), // Convert Date to string
+    try {
+      await axios.post(
+        `${process.env.BACKEND_URL}/api/order/trigger-new-order`, // Correct endpoint
+        {
+          order: {
+            ...newOrder.toObject(),
+            date: newOrder.date.toISOString(), // Convert Date to string
+          },
         },
-      },
-      { headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` } }
-    );
+        {
+          headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` },
+          timeout: 15000, // 10-second timeout
+        }
+      );
+      console.log("Socket notification sent successfully");
+    } catch (socketError) {
+      console.error("Socket notification failed:", socketError.message);
+      // Continue without failing the request
+    }
 
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
-    console.error("Order placement error:", error);
+    console.error("Order placement error:", error.message, error.stack);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal server error",
     });
   }
 };
