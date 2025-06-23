@@ -6,7 +6,7 @@ import parcel from "../assets/parcel_icon.svg";
 import { io } from "socket.io-client";
 import notificationSound from "../assets/notification.wav";
 
-const socketServerUrl = "https://konafa-shiek-notify.onrender.com";
+const socketServerUrl = "https://konafa-shiek-backend-test.vercel.app";
 
 const AdminOrders = ({ token }) => {
   const [orders, setOrders] = useState([]);
