@@ -28,7 +28,36 @@ const placeOrder = async (req, res) => {
         message: "User ID missing in request",
       });
     }
+
     const { items, amount, address, deliveryMethod } = req.body;
+    console.log("Received order data:", { userId, items, amount, address, deliveryMethod });
+
+    // Validate required fields
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Items array is required and must not be empty",
+      });
+    }
+    if (!amount || typeof amount !== "number" || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid amount is required",
+      });
+    }
+    if (!address || typeof address !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Valid address object is required",
+      });
+    }
+    if (!deliveryMethod || !["delivery", "branch"].includes(deliveryMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid delivery method is required",
+      });
+    }
+
     const orderData = {
       userId,
       items,
@@ -42,29 +71,16 @@ const placeOrder = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    console.log("Order saved successfully:", newOrder._id);
 
-    // Socket notification with error handling
-    try {
-      await axios.post(
-        `${process.env.BACKEND_URL}/api/order/trigger-new-order`, // Correct endpoint
-        {
-          order: {
-            ...newOrder.toObject(),
-            date: newOrder.date.toISOString(), // Convert Date to string
-          },
-        },
-        {
-          headers: { Authorization: `Bearer ${process.env.SOCKET_SECRET}` },
-          timeout: 15000, // 10-second timeout
-        }
-      );
-      console.log("Socket notification sent successfully");
-    } catch (socketError) {
-      console.error("Socket notification failed:", socketError.message);
-      // Continue without failing the request
+    // Update user's cart
+    const cartUpdate = await userModel.findByIdAndUpdate(userId, { cartData: {} }, { new: true });
+    if (!cartUpdate) {
+      console.warn("Cart update failed or user not found, but order saved:", userId);
+    } else {
+      console.log("Cart cleared successfully for user:", userId);
     }
 
-    await userModel.findByIdAndUpdate(userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
     console.error("Order placement error:", error.message, error.stack);
