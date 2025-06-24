@@ -98,13 +98,13 @@ const Login = ({ setToken }) => {
   };
 
   const handleSuccess = async (data, redirectPath) => {
-    const { token, userId } = data;
-    setToken(token);
-    localStorage.setItem("token", token);
-    if (userId) localStorage.setItem("userId", userId);
-    navigate(redirectPath);
-    window.location.reload();
-  };
+  const { token, userId } = data;
+  setToken(token); // Update context if used
+  localStorage.setItem("token", token);
+  localStorage.setItem("userId", userId); // Ensure userId is stored
+  navigate(redirectPath);
+  window.location.reload();
+};
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();

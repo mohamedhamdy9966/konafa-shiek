@@ -16,13 +16,6 @@ const app = express();
 connectDB();
 connectCloudinary();
 
-// Set timeout for all requests
-app.use((req, res, next) => {
-  req.setTimeout(30000); // Increase to 30 seconds
-  res.setTimeout(30000);
-  next();
-});
-
 // CORS setup
 app.use(
   cors({

@@ -272,25 +272,16 @@ const PlaceOrder = () => {
   });
 
   const checkAuthentication = () => {
-    const userId = localStorage.getItem("userId") || token?.userId;
-    if (!userId) {
-      toast.error("برجاء تسجيل الدخول لإتمام عملية الشراء", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        rtl: true,
-      });
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
-      return false;
-    }
-    return true;
-  };
+  const userId = localStorage.getItem("userId") || token?.userId;
+  const tokenToUse = token || localStorage.getItem("token");
+  console.log("Token:", tokenToUse, "UserId:", userId);
+  if (!userId || !tokenToUse) {
+    toast.error("برجاء تسجيل الدخول لإتمام عملية الشراء");
+    setTimeout(() => navigate("/login"), 1000);
+    return false;
+  }
+  return true;
+};
 
   return (
     <form
