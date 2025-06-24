@@ -73,14 +73,6 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
     console.log("Order saved successfully:", newOrder._id);
 
-    // Update user's cart
-    const cartUpdate = await userModel.findByIdAndUpdate(userId, { cartData: {} }, { new: true });
-    if (!cartUpdate) {
-      console.warn("Cart update failed or user not found, but order saved:", userId);
-    } else {
-      console.log("Cart cleared successfully for user:", userId);
-    }
-
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
     console.error("Order placement error:", error.message, error.stack);
